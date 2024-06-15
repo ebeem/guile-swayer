@@ -17,9 +17,8 @@
 (define (keybindings-init)
   (kbd-init)
 
-  ;; (configure-sway-keybinding-translator custom-sway-keybinding-translator)
-  (define general-module (resolve-module '(modules general)))
   (configure-sway-keybinding-translator custom-sway-keybinding-translator)
+  (configure-sway-commander-path "~/.config/sway/commander")
 
   ;; define root keybindings
   (sway-define-keys

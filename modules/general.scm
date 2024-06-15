@@ -5,6 +5,8 @@
   #:use-module (srfi srfi-18)
   #:use-module (ice-9 hash-table)
   #:export (sway-keybinding-translator
+            sway-commander-path
+            configure-sway-commander-path
             configure-sway-keybinding-translator
             sway-define-keys
             sway-define-key
@@ -27,8 +29,16 @@
    like key chords. The default implementation doesn't modify passed keybindings"
   key)
 
+(define sway-commander-path
+  (if current-filename
+      (dirname (dirname current-filename))
+      "commander"))
+
 (define (configure-sway-keybinding-translator proc)
   (set! sway-keybinding-translator proc))
+
+(define (configure-sway-commander-path path)
+  (set! sway-commander-path path))
 
 (define (exp->string exp)
   (call-with-output-string (lambda (p)
@@ -48,7 +58,7 @@
   (car (reverse (string-split key #\+))))
 
 (define (sway-command exp-str)
-  (string-append "exec '" (dirname (dirname (current-filename))) "/commander "
+  (string-append "exec '" sway-commander-path " "
                  (exp->string exp-str) "'"))
 
 (define* (define-keybindings chord key exp wk submap)
@@ -97,11 +107,12 @@
 
   (map (lambda (arg)
          (when (list? arg)
-
             (display "ARG: ")
             (display arg)
             (newline)
-            (display (car arg))
+            (display (and
+                 (symbol? (car arg))
+                 (equal? "sway-define-keys" (symbol->string (car arg)))))
             (newline)
             (if (and
                  (symbol? (car arg))

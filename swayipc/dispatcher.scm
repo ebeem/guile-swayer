@@ -1012,7 +1012,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
   (dispatch-command
-   (string-append "client.focused " border-color background-color text-color
+   (string-append "client.focused " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
 
@@ -1027,7 +1027,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
   (dispatch-command
-   (string-append "client.focused_inactive " border-color background-color text-color
+   (string-append "client.focused_inactive " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
 
@@ -1041,7 +1041,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
   (dispatch-command
-   (string-append "client.focused_tab_title " border-color background-color text-color)))
+   (string-append "client.focused_tab_title " border-color " " background-color " " text-color)))
 
 (define* (sway-client-placeholder-color border-color background-color text-color
                                    #:key indictor-color child-border-color)
@@ -1053,7 +1053,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
   (dispatch-command
-   (string-append "client.placeholder " border-color background-color text-color
+   (string-append "client.placeholder " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
 
@@ -1068,7 +1068,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
   (dispatch-command
-   (string-append "client.unfocused " border-color background-color text-color
+   (string-append "client.unfocused " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
 
@@ -1083,7 +1083,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
   (dispatch-command
-   (string-append "client.urgent " border-color background-color text-color
+   (string-append "client.urgent " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
 

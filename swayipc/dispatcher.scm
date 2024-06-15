@@ -8,30 +8,19 @@
   #:export (SWAY-ORIENTATION-HORIZONTAL
             SWAY-ORIENTATION-VERTICAL
             SWAY-ORIENTATION-AUTO
-            sway-default-orientation
-            sway-include
-            sway-swaybg-command
-            sway-swaynag-command
             SWAY-LAYOUT-DEFAULT
             SWAY-LAYOUT-STAKCING
             SWAY-LAYOUT-TABBED
-            sway-workspace-layout
             SWAY-XWAYLAND-ENABLE
             SWAY-XWAYLAND-DISABLE
             SWAY-XWAYLAND-FORCE
-            sway-xwayland
             SWAY-BORDER-NONE
             SWAY-BORDER-NORMAL
             SWAY-BORDER-CSD
             SWAY-BORDER-PIXEL
-            sway-border
-            sway-border-toggle
-            sway-exit
             SWAY-FLOATING-ENABLED
             SWAY-FLOATING-DISABLED
             SWAY-FLOATING-TOGGLE
-            sway-floating
-            sway-focus-container-criteria
             SWAY-DIRECTION-UP
             SWAY-DIRECTION-RIGHT
             SWAY-DIRECTION-DOWN
@@ -40,18 +29,9 @@
             SWAY-SIBLING-PREV
             SWAY-HIERARCHY-CHILD
             SWAY-HIERARCHY-PARENT
-            sway-focus-container
-            sway-focus-container-sibling
-            sway-focus-container-child
-            sway-focus-container-parent
-            sway-focus-output-direction
-            sway-focus-output-name
-            sway-focus-container-tiling
-            sway-focus-container-floating
             SWAY-FULLSCREEN-ENABLED
             SWAY-FULLSCREEN-DISABLED
             SWAY-FULLSCREEN-TOGGLE
-            sway-fullscreen
             SWAY-GAPS-OPTION-INNER
             SWAY-GAPS-OPTION-OUTER
             SWAY-GAPS-OPTION-HORIZONTAL
@@ -66,151 +46,204 @@
             SWAY-GAPS-WORKSPACE-PLUS
             SWAY-GAPS-WORKSPACE-MINUS
             SWAY-GAPS-WORKSPACE-TOGGLE
-            sway-gaps
-            SWAY-INHIBIT-IDLE-FOCUS
-            SWAY-INHIBIT-IDLE-FULLSCREEN
-            SWAY-INHIBIT-IDLE-OPEN
-            SWAY-INHIBIT-IDLE-NONE
-            SWAY-INHIBIT-IDLE-VISIBLE
-            sway-inhibit-idle
-            SWAY-LAYOUT-SPLITH
-            SWAY-LAYOUT-SPLITV
-            SWAY-LAYOUT-STACKING
-            sway-layout
-            SWAY-LAYOUT-TOGGLE-ALL
-            SWAY-LAYOUT-TOGGLE-SPLIT
-            sway-move-container
-            sway-move-container-absolute-position
-            sway-move-container-absolute-center
-            sway-move-container-cursor
-            sway-move-container-to-mark
-            SWAY-WORKSPACE-PREVIOUS
-            SWAY-WORKSPACE-NEXT
-            SWAY-WORKSPACE-CURRENT
-            SWAY-WORKSPACE-PREVIOUS-ON-OUTPUT
-            SWAY-WORKSPACE-NEXT-ON-OUTPUT
-            SWAY-WORKSPACE-BACK-AND-FORTH
-            sway-move-container-to-workspace
-            SWAY-OUTPUT-CURRENT
-            SWAY-OUTPUT-UP
-            SWAY-OUTPUT-RIGHT
-            SWAY-OUTPUT-DOWN
-            SWAY-OUTPUT-LEFT
-            sway-move-container-to-output
-            sway-move-container-to-scratchpad
-            sway-move-workspace-to-output
-            sway-reload
-            sway-rename-workspace
-            sway-rename-current-workspace
-            SWAY-RESIZE-TYPE-SHRINK
-            SWAY-RESIZE-TYPE-GROW-WIDTH
-            SWAY-RESIZE-TYPE-GROW-HEIGHT
-            SWAY-SIZE-UNIT-PX
-            SWAY-SIZE-UNIT-PPT
-            sway-show-scratchpad
-            sway-shortcuts-inhibitor
-            SWAY-SPLIT-VERTICAL
-            SWAY-SPLIT-HORIZONTAL
-            SWAY-SPLIT-NONE
-            SWAY-SPLIT-TOGGLE
-            sway-split-container
-            SWAY-STICKY-ENABLE
-            SWAY-STICKY-DISABLE
-            SWAY-STICKY-TOGGLE
-            sway-sticky
-            sway-title-format
-            sway-assign-to-workspace
-            sway-assign-to-output
-            bindings
-            sway-client-background
-            sway-client-focused-tab-title-color
-            SWAY-BORDER-STYLE-NONE
-            SWAY-BORDER-STYLE-NORMAL
-            SWAY-BORDER-STYLE-PIXEL
-            sway-exec
-            sway-exec-always
-            sway-floating-maximum-size
-            sway-floating-minimum-size
+            SWAY-MOUSE-WARPING-OUTPUT
+            SWAY-MOUSE-WARPING-CONTAINER
+            SWAY-MOUSE-WARPING-NONE
+            SWAY-POPUP-TYPE-OUTPUTSMART
+            SWAY-POPUP-TYPE-IGNORE
+            SWAY-POPUP-TYPE-LEAVE-FULLSCREEN
+            SWAY-PRIMARY-SELECTION-ENABLED
+            SWAY-PRIMARY-SELECTION-DISABLED
+            SWAY-SHOW-MARKS-YES
+            SWAY-SHOW-MARKS-NO
+            SWAY-OPACITY-SET
+            SWAY-OPACITY-PLUS
+            SWAY-OPACITY-MINUS
+            SWAY-TILING-DRAG-ENABLE
+            SWAY-TILING-DRAG-DISABLE
+            SWAY-TILING-DRAG-TOGGLE
+            SWAY-TILING-ALIGN-LEFT
+            SWAY-TILING-ALIGN-CENTER
+            SWAY-TILING-ALIGN-RIGHT
+            SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES
+            SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-NO
             SWAY-FLOATING-MODIFIER-TYPE-NORMAL
             SWAY-FLOATING-MODIFIER-TYPE-INVERSE
-            sway-floating-modifier
             SWAY-FOCUS-FOLLOW-MOUSE-FLAG-YES
             SWAY-FOCUS-FOLLOW-MOUSE-FLAG-NO
             SWAY-FOCUS-FOLLOW-MOUSE-FLAG-ALWAYS
-            sway-focus-follow-mouse
             SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-SMART
             SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-URGENT
             SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-FOCUS
             SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-NONE
-            sway-focus-on-window-activation
             SWAY-FOCUS-WRAPPING-FLAG-YES
             SWAY-FOCUS-WRAPPING-FLAG-NO
             SWAY-FOCUS-WRAPPING-FLAG-FORCE
             SWAY-FOCUS-WRAPPING-FLAG-WORKSPACE
-            sway-focus-wrapping
-            sway-force-display-urgency-hint
-            sway-titlebar-border-thickness
-            sway-titlebar-padding
-            sway-for-window
-            sway-default-gaps
             SWAY-EDGE-BORDER-TYPE-NONE
             SWAY-EDGE-BORDER-TYPE-VERTICAL
             SWAY-EDGE-BORDER-TYPE-HORIZONTAL
             SWAY-EDGE-BORDER-TYPE-BOTH
             SWAY-EDGE-BORDER-TYPE-SMART
             SWAY-EDGE-BORDER-TYPE-SMART-NO-GAPS
-            sway-input
-            sway-seat
-            sway-kill
             SWAY-SMART-BORDERS-ON
             SWAY-SMART-BORDERS-OFF
             SWAY-SMART-BORDERS-NO-GAPS
-            sway-smart-borders
             SWAY-SMART-GAPS-ON
             SWAY-SMART-GAPS-OFF
             SWAY-SMART-GAPS-TOGGLE
             SWAY-SMART-GAPS-INVERSE-OUTER
+            SWAY-RESIZE-TYPE-SHRINK
+            SWAY-RESIZE-TYPE-GROW-WIDTH
+            SWAY-RESIZE-TYPE-GROW-HEIGHT
+            SWAY-SIZE-UNIT-PX
+            SWAY-SIZE-UNIT-PPT
+            SWAY-SPLIT-VERTICAL
+            SWAY-SPLIT-HORIZONTAL
+            SWAY-SPLIT-NONE
+            SWAY-SPLIT-TOGGLE
+            SWAY-STICKY-ENABLE
+            SWAY-STICKY-DISABLE
+            SWAY-STICKY-TOGGLE
+            SWAY-SWAY-CONTAINER-TYPE-ID
+            SWAY-SWAY-CONTAINER-TYPE-CONTAINER-ID
+            SWAY-SWAY-CONTAINER-TYPE-MARK
+            SWAY-URGENT-ENABLE
+            SWAY-URGENT-DISABLE
+            SWAY-URGENT-ALLOW
+            SWAY-URGENT-DENY
+            SWAY-BORDER-STYLE-NONE
+            SWAY-BORDER-STYLE-NORMAL
+            SWAY-BORDER-STYLE-PIXEL
+            SWAY-INHIBIT-IDLE-FOCUS
+            SWAY-INHIBIT-IDLE-FULLSCREEN
+            SWAY-INHIBIT-IDLE-OPEN
+            SWAY-INHIBIT-IDLE-NONE
+            SWAY-INHIBIT-IDLE-VISIBLE
+            SWAY-LAYOUT-SPLITH
+            SWAY-LAYOUT-SPLITV
+            SWAY-LAYOUT-STACKING
+            SWAY-LAYOUT-TOGGLE-ALL
+            SWAY-LAYOUT-TOGGLE-SPLIT
+            SWAY-WORKSPACE-PREVIOUS
+            SWAY-WORKSPACE-NEXT
+            SWAY-WORKSPACE-CURRENT
+            SWAY-WORKSPACE-PREVIOUS-ON-OUTPUT
+            SWAY-WORKSPACE-NEXT-ON-OUTPUT
+            SWAY-WORKSPACE-BACK-AND-FORTH
+            SWAY-OUTPUT-CURRENT
+            SWAY-OUTPUT-UP
+            SWAY-OUTPUT-RIGHT
+            SWAY-OUTPUT-DOWN
+            SWAY-OUTPUT-LEFT
+
+            catch-all
+            dispatch-command
+            dispatch-commands
+            sway-default-orientation
+            sway-include
+            sway-swaybg-command
+            sway-swaynag-command
+            sway-workspace-layout
+            sway-xwayland
+            sway-border
+            sway-border-toggle
+            sway-exit
+            sway-floating
+            sway-focus-container-criteria
+            sway-focus-container
+            sway-focus-container-sibling
+            sway-focus-container-child
+            sway-focus-container-parent
+            sway-focus-output-direction
+            sway-focus-output-name
+            sway-focus-container-tiling
+            sway-focus-container-floating
+            sway-fullscreen
+            sway-gaps
+            sway-inhibit-idle
+            sway-layout
+            sway-layout-toggle
+            sway-move-container
+            sway-move-container-absolute-position
+            sway-move-container-absolute-center
+            sway-move-container-cursor
+            sway-move-container-to-mark
+            sway-move-container-to-workspace
+            sway-move-container-to-output
+            sway-move-container-to-scratchpad
+            sway-move-workspace-to-output
+            sway-nop
+            sway-reload
+            sway-rename-workspace
+            sway-rename-current-workspace
+            sway-resize
+            sway-resize-height
+            sway-resize-width
+            sway-show-scratchpad
+            sway-shortcuts-inhibitor
+            sway-split-container
+            sway-sticky
+            sway-swap-container
+            sway-title-format
+            sway-assign-to-workspace
+            sway-assign-to-output
+            sway-bindsym
+            sway-bindcode
+            sway-bindswitch
+            sway-unbindswitch
+            sway-unbindsym
+            sway-unbindcode
+            sway-unmark
+            sway-urgent
+            sway-client-background
+            sway-client-focused-color
+            sway-client-focused-inactive-color
+            sway-client-focused-tab-title-color
+            sway-client-placeholder-color
+            sway-client-unfocused-color
+            sway-client-urgent-color
+            sway-default-border-style
+            sway-default-floating-border-style
+            sway-exec
+            sway-exec-always
+            sway-floating-maximum-size
+            sway-floating-minimum-size
+            sway-floating-modifier
+            sway-focus-follow-mouse
+            sway-focus-on-window-activation
+            sway-focus-wrapping
+            sway-font
+            sway-force-display-urgency-hint
+            sway-titlebar-border-thickness
+            sway-titlebar-padding
+            sway-for-window
+            sway-default-gaps
+            sway-hide-edge-borders
+            sway-input
+            sway-seat
+            sway-kill
+            sway-smart-borders
             sway-smart-gaps
             sway-mode
             sway-mode-subcommand
-            SWAY-MOUSE-WARPING-OUTPUT
-            SWAY-MOUSE-WARPING-CONTAINER
-            SWAY-MOUSE-WARPING-NONE
             sway-mouse-warping
             sway-no-focus
             sway-output
-            SWAY-POPUP-TYPE-OUTPUTSMART
-            SWAY-POPUP-TYPE-IGNORE
-            SWAY-POPUP-TYPE-LEAVE-FULLSCREEN
             sway-popup-during-fullscreen
-            SWAY-PRIMARY-SELECTION-ENABLED
-            SWAY-PRIMARY-SELECTION-DISABLED
             sway-primary-selection
-            SWAY-SHOW-MARKS-YES
-            SWAY-SHOW-MARKS-NO
             sway-show-marks
-            SWAY-OPACITY-SET
-            SWAY-OPACITY-PLUS
-            SWAY-OPACITY-MINUS
             sway-opacity
-            SWAY-TILING-DRAG-ENABLE
-            SWAY-TILING-DRAG-DISABLE
-            SWAY-TILING-DRAG-TOGGLE
             sway-tiling-drag
             sway-tiling-drag-threshold
-            SWAY-TILING-ALIGN-LEFT
-            SWAY-TILING-ALIGN-CENTER
-            SWAY-TILING-ALIGN-RIGHT
             sway-tiling-align
-            sway-switch-workspace-on-output
+            sway-switch-workspace-id
             sway-switch-workspace
-            SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES
-            SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-NO
+            sway-switch-workspace-on-output
             sway-workspace-auto-back-and-forth
             sway-workspace-gaps
             sway-criteria
-            dispatch-commands
-            dispatch-command))
+            custom-exception-handler))
 
 (define (custom-exception-handler exc)
   (display "An error occurred while dispatching the command\n"))

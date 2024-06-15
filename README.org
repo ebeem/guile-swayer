@@ -1,0 +1,127 @@
+#+title: Readme
+#+STARTUP: inlineimages
+#+OPTIONS: toc:3 ^:nil
+
+** SWAYIPC
+
+I am an =Emacs= user and previously used =StumpWM=, an =X11= window manager written in =Common Lisp=. I believe window managers should be scriptable because the level of workflow customization required by users often exceeds what can be achieved with simple configuration parameters (see my workflow below for a clearer understanding of why this is the case). Unfortunately, =Sway/i3= lacks a straightforward programmable interface for customization. This project provides complete control over =Sway/i3= using =Guile=! 
+
+** Why Sway?
+
+I had to migrate to =Wayland= at some point. Being a big fan of =StumpWM=, I tried to replicate a similar environment in one of the =Wayland= window managers. I made some progress with =hyprland= using a set of =Guile= bindings I developed called =hypripc=, but I found that =Hyprland= isn't as stable as =Sway=.
+
+** Quick Overview
+
+*** Query Sway
+
+You can retrieve information about =Sway=, such as list of available =workspaces= or =outputs=. The response will be in Guile records, which you can easily manipulate! (refer to =swayipc/records.scm=)
+
+#+begin_src scheme 
+;; get focused workspace from a list of workspaces
+(define (focused-workspace-name workspaces)
+  (cond
+    ((null? workspaces) #f)
+    ((equal? #t (sway-workspace-focused (car workspaces)))
+    (sway-workspace-name (car workspaces)))
+    (else (focused-workspace-name (cdr workspaces)))))
+
+(focused-workspace-name (sway-get-workspaces))
+#+end_src
+
+*** Assign Keybindings
+
+You can assign keybindings that execute Guile code! Obviously, running shell commands is straightforward since you're operating within Guile. Additionally, you have full access to Sway/i3 specific commands (refer to =swayipc/dispatcher.scm=).
+
+#+begin_src scheme 
+  ;; define leader keymap
+  (sway-define-keys
+   #:prefix "s-Space" #:wk "Leader"
+   `("o" (exec "rofi -show drun"))
+   `("C-g" (sway-mode "default") #:wk "abort")
+
+   ;; rofi keymap
+   `(sway-define-keys
+     #:prefix "r" #:wk "Rofi"
+     ("p" (exec "~/.config/rofi/bin/password-manager"))
+     ("m" (exec "rofi-mount"))
+     ("u" (exec "rofi-unmount"))
+     ("w" (exec ".config/rofi/bin/wifi"))
+     ("b" (exec "~/.config/rofi/bin/bluetooth"))
+     ("f" (exec "~/.config/rofi/bin/finder"))
+     ("k" (exec "~/.config/rofi/bin/keyboard-layout"))
+     ("P" (exec "~/.config/rofi/bin/powermenu"))
+     ("s" (exec "~/.config/rofi/bin/sound-input"))
+     ("S" (exec "~/.config/rofi/bin/sound-output")))
+
+   ;; window management
+   `(sway-define-keys
+     #:prefix "w" #:wk "Window"
+     ("v" (sway-split-container SWAY-SPLIT-VERTICAL))
+     ("h" (sway-split-container SWAY-SPLIT-HORIZONTAL))
+     ("f" (sway-fullscreen SWAY-FULLSCREEN-TOGGLE))
+     ("d" (sway-fullscreen SWAY-FULLSCREEN-TOGGLE))))
+#+end_src
+
+*** Subscribe for Events
+
+Certain scenarios necessitate subscribing to events. One example from my =workflow= described below requires this capability. With =swayipc=, you have the ability to listen for events and execute actions in response.
+
+#+begin_src scheme 
+  (define (workspace-changed workspace-event)
+    (let* ((current-tree (sway-workspace-event-current workspace-event))
+           (workspace (sway-tree-name current-tree))
+           (focused-workspace (focused-workspace (sway-get-workspaces))))
+
+      (display workspace)))
+
+    (add-hook! sway-workspace-hook workspace-changed)
+#+end_src
+
+** Documentation (WIP)
+
+Most of the source code is documented. You can refer to =init.scm= for a configuration sample. Here are some important points to consider before hacking your Sway setup:
+
+*** Quick Start
+Clone this repository to your =~/.config/sway=
+
+*** Project Structure
+
+| File                         | Description                                                                                               |
+|------------------------------+-----------------------------------------------------------------------------------------------------------|
+| init.scm                     | Main entry point for configuring Sway using Guile.                                                        |
+| behavior.scm                 | Loaded by =init.scm=; modifies parameters and behavior of Sway.                                             |
+| keybindings.scm              | Loaded by =init.scm=; adds custom keybindings to Sway.                                                      |
+| commander                    | Guile script to send commands to =swayipc= (facilitates keybinding functionality).                          |
+| config                       | Sway configuration file; typically used to invoke =init.scm=.                                               |
+| sjson                        | A patched version of =guile-json=; planned to be a separate dependency in the future (not embedded).        |
+|------------------------------+-----------------------------------------------------------------------------------------------------------|
+| modules/                     | Directory containing modules for extending Sway using =swayipc=.                                            |
+| modules/auto-reload.scm      | TODO: Watcher to automatically reload Sway when Guile files change.                                       |
+| modules/general.scm          | Inspired by Emacs =general= package; provides an easy interface for assigning keybindings.                  |
+| modules/kbd.scm              | WIP: Translates Emacs-like keybindings to be compatible with =Sway=.                                        |
+| modules/which-key.scm        | TODO: Inspired by Emacs =which-key= package; enhances keybinding discovery and management.                  |
+| modules/workspace-grid.scm   | Configures workspaces in a grid and enables movement between them in specified directions (see workflow). |
+| modules/workspace-groups.scm | WIP: Spans/synchronizes workspaces across monitors (see workflow).                                        |
+|------------------------------+-----------------------------------------------------------------------------------------------------------|
+| swayipc/                     | Directory containing the core code for =swayipc=, facilitating communication with Sway.                     |
+| swayipc/connection           | Establishes =IPC= connection for handling events and commands with Sway.                                    |
+| swayipc/dispatcher           | Provides =Guile functions= for all available =Sway= commands.                                                 |
+| swayipc/events               | Provides =Gulie Hooks= for all available =Sway= events.                                                       |
+| swayipc/info                 | Provides =Guile functions= for querying Sway's current state and information.                               |
+| swayipc/records              | Provides =Guile records= representing Sway's data structures.                                               |
+
+1- You can start your =swayipc= configurations from the =REPL=, =terminal=, or a configuration file.
+Remember: for debugging or displaying output, it's best to run Guile from the REPL or terminal. You can also pipe the output to a file if you desire.
+
+#+begin_src conf 
+# from sway config file
+exec_always "~/.config/sway/init.scm"
+#+end_src
+
+2- I plan to publish a module for =swayipc=, it's currently not hosted anywhere. You'll need to add the module to your =load path=. Additionally, =swayipc= includes another patched Guile library called =guile-json=, which is embedded for now. In the future, this will be included as a separate dependency rather than embedded.
+
+#+begin_src scheme 
+(add-to-load-path
+ (dirname (or (current-filename)
+              (string-append (getenv "HOME") "/.config/sway/init.scm"))))
+#+end_src

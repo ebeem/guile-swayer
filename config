@@ -1,0 +1,2 @@
+include /etc/sway/config.d/*
+exec_always "~/.config/sway/init.scm"

@@ -69,8 +69,7 @@ Certain scenarios necessitate subscribing to events. One example from my =workfl
 #+begin_src scheme 
   (define (workspace-changed workspace-event)
     (let* ((current-tree (sway-workspace-event-current workspace-event))
-           (workspace (sway-tree-name current-tree))
-           (focused-workspace (focused-workspace (sway-get-workspaces))))
+           (workspace (sway-tree-name current-tree)))
 
       (display workspace)))
 

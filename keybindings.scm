@@ -63,9 +63,9 @@
    `("s-M-C-k" (move-container-to-workspace-up))
    `("s-M-C-l" (move-container-to-workspace-right))
 
-    ;; ;; Tab like cycling
-    ;; (define-key *top-map* (kbd "s-.") "next-in-frame")
-    ;; (define-key *top-map* (kbd "s-,") "prev-in-frame")
+   ;; Tab like cycling
+   `("s-." (sway-focus-container-sibling SWAY-SIBLING-NEXT))
+   `("s-," (sway-focus-container-sibling SWAY-SIBLING-PREV))
 
    `("s-w" (sway-kill))
    `("s-Return" (exec "alacritty"))
@@ -115,7 +115,8 @@
 
    `(sway-define-keys
      #:prefix "w" #:wk "Window"
-     ("v" (sway-split-container SWAY-SPLIT-VERTICAL))
-     ("h" (sway-split-container SWAY-SPLIT-HORIZONTAL))
+     ("v" (sway-layout SWAY-LAYOUT-SPLITV))
+     ("h" (sway-layout SWAY-LAYOUT-SPLITH))
      ("f" (sway-fullscreen SWAY-FULLSCREEN-TOGGLE))
-     ("d" (sway-fullscreen SWAY-FULLSCREEN-TOGGLE)))))
+     ("d" (sway-layout SWAY-LAYOUT-DEFAULT))
+     ("t" (sway-layout SWAY-LAYOUT-TABBED)))))

@@ -4,14 +4,14 @@
 (sway-output "DP-1" "resolution 1920x1080 position 0,0")
 (sway-output "DP-2" "resolution 1920x1080 position 0,0")
 
-(sway-output "*" "bg /home/ebeem/dotfiles/.wallpapers/fixed/flat-20.png fill")
+(sway-output "*" "bg ~/.wallpapers/fixed/flat-20.png fill")
 
 (sway-focus-follow-mouse SWAY-FOCUS-FOLLOW-MOUSE-FLAG-NO)
 (sway-default-gaps SWAY-GAPS-OPTION-INNER 10)
 (sway-title-format "")
-(sway-layout SWAY-LAYOUT-TABBED)
+(sway-workspace-layout SWAY-LAYOUT-TABBED)
 (sway-titlebar-border-thickness 0)
-(sway-titlebar-padding 0 0)
+(sway-titlebar-padding 25 0)
 (sway-default-border-style SWAY-BORDER-STYLE-PIXEL #:n 4)
 
 ;; TODO: better move theme colors to another module for all guile scripts to inherit from
@@ -44,16 +44,16 @@
 
 (sway-client-background base)
 
-(sway-client-focused-color mauve base text
-                           #:indictor-color rosewater
+(sway-client-focused-color mauve mauve crust
+                           #:indictor-color mauve
                            #:child-border-color mauve)
 
-(sway-client-focused-inactive-color overlay0 base text
-                           #:indictor-color rosewater
+(sway-client-focused-inactive-color overlay0 overlay0 text
+                           #:indictor-color overlay0
                            #:child-border-color overlay0)
 
-(sway-client-unfocused-color overlay0 base text
-                           #:indictor-color rosewater
+(sway-client-unfocused-color overlay0 overlay0 text
+                           #:indictor-color overlay0
                            #:child-border-color overlay0)
 
 (sway-client-urgent-color peach base peach
@@ -64,3 +64,8 @@
                            #:indictor-color overlay0
                            #:child-border-color overlay0)
 
+(sway-font "Iosevka SS14 Bold 12")
+(sway-workspace-auto-back-and-forth #f)
+(sway-mouse-warping SWAY-MOUSE-WARPING-NONE)
+;; (sway-opacity SWAY-OPACITY-SET 0.95)
+(sway-show-marks SWAY-SHOW-MARKS-NO)

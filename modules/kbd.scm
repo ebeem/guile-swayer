@@ -51,15 +51,11 @@
    (else (list translation key))))
 
 (define* (replace-key-symbols key)
-  (if
-   (and (equal? #\< (string-ref key 0))
-        (equal? #\> (string-ref key (- (string-length key) 1))))
-   (let* ((lkey (keysym-clean (substring key 1 (- (string-length key) 1))))
+  (let* ((lkey (keysym-clean key))
           (translation (hash-get-handle keysym-translations lkey)))
      (if (pair? translation)
          (cdr translation)
-         key))
-   key))
+         key)))
 
 (define (sway-key key)
   (let* ((modifier (replace-modifiers key))

@@ -1,8 +1,8 @@
 (use-modules (swayipc dispatcher))
 
-(sway-output "HDMI-A-2" "resolution 1920x1080 position 0,0")
-(sway-output "DP-1" "resolution 1920x1080 position 0,0")
-(sway-output "DP-2" "resolution 1920x1080 position 0,0")
+(sway-output "HDMI-A-2" "pos 0 0 res 1920x1080")
+(sway-output "DP-1" "pos 1920 0 res 1920x1080")
+(sway-output "DP-2" "pos 3840 0 res 1920x1080")
 
 (sway-output "*" "bg ~/.wallpapers/fixed/flat-20.png fill")
 

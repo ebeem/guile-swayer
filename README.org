@@ -50,10 +50,15 @@ You can retrieve information about =Sway=, such as list of available =workspaces
 You can assign keybindings that execute Guile code! Obviously, running shell commands is straightforward since you're operating within Guile. Additionally, you have full access to Sway/i3 specific commands (refer to =swayipc/dispatcher.scm=).
 
 #+begin_src scheme
-  ;; sway commands
+  ;; normal sway keybindings (limited and can't easily execute guile code)
   (sway-bindsym "Mod4+t" "exec alacritty")
 
-  ;; general.scm interface (requires some configuration, refere to the FIXME note in keybindings.scm)
+  ;; general.scm interface for sway keybindings
+  ;; this uses sway-bindsym behind the scenes, but provides a much
+  ;; user friendly interface to create complex keybindings structure
+  ;; it also allows you to execute guile expressions on trigger.
+  ;; requires configuring commander-path, refere to the FIXME note in keybindings.scm for more details.
+  ;; refer to modules/general.scm for more about how this is done.
   ;; define leader keymap
   (general-define-keys
    #:prefix "s-Space" #:wk "Leader"

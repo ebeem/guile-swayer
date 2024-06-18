@@ -22,6 +22,7 @@
   #:use-module (swayipc events)
 
   #:export (workspace-groups-init
+            workspace-groups-configure
             OUTPUTS
             GROUPS))
 
@@ -40,11 +41,9 @@
 ;;     ("19" "29" "39")))
 (define GROUPS '())
 
-(define (configure-outputs outputs)
-  (set! OUTPUTS outputs))
-
-(define (configure-groups groups)
-  (set! GROUPS groups))
+(define* (workspace-groups-configure #:key outputs groups)
+  (when outputs (set! OUTPUTS outputs))
+  (when groups (set! GROUPS groups)))
 
 (define last-switched-group '())
 

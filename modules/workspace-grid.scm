@@ -20,9 +20,7 @@
             WORKSPACES
             COLUMNS
             ROWS
-            configure-workspaces
-            configure-rows
-            configure-columns
+            workspace-grid-configure
             get-active-workspace-index
             switch-workspace-up
             switch-workspace-right
@@ -46,14 +44,10 @@
 ;; number of columns in the grid
 (define COLUMNS 1)
 
-(define (configure-workspaces workspaces)
-  (set! WORKSPACES workspaces))
-
-(define (configure-rows rows)
-  (set! ROWS rows))
-
-(define (configure-columns columns)
-  (set! COLUMNS columns))
+(define* (workspace-grid-configure #:key rows columns workspaces)
+  (when rows (set! ROWS rows))
+  (when columns (set! COLUMNS columns))
+  (when workspaces (set! WORKSPACES workspaces)))
 
 (define* (get-active-workspace-name #:optional (workspaces (sway-get-workspaces)))
   "get name of active workspace"

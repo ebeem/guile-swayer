@@ -16,6 +16,7 @@
              (swayipc dispatcher))
 
 (load "behavior.scm")
+
 ;; init keybindings
 (load "keybindings.scm")
 (keybindings-init)

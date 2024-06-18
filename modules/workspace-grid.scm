@@ -1,13 +1,9 @@
 ;; use example:
 
-;; (set! WORKSPACES
-;; (("10" "11" "12" "13" "14" "15" "16" "17" "18" "19")
-;;  ("20" "21" "22" "23" "24" "25" "26" "27" "28" "29")
-;;  ("30" "31" "32" "33" "34" "35" "36" "37" "38" "39"))
-
-;; (set! ROWS 3)
-;; (set! COLUMNS 3)
-
+;; (workspace-grid-configure #:rows 2 #:columns
+;;                           '(("ws-o1-1" "ws-o1-2" "ws-o1-3" "ws-o1-3")
+;;                             ("ws-o2-1" "ws-o2-2" "ws-o2-3" "ws-o2-3")
+;;                             ("ws-o3-1" "ws-o3-2" "ws-o3-3" "ws-o3-3")))
 ;; (workspace-grid-init)
 
 (define-module (modules workspace-grid)
@@ -34,8 +30,6 @@
 
 ;; The order in which the outputs are organized, it's important that
 ;; the order of outputs match the order of workspaces in `WORKSPACE`
-;; example:
-;; (set! WORKSPACES '(("ws-o1-1" "ws-o1-2" "ws-o1-3") ("ws-o2-1" "ws-o2-2" "ws-o2-3"))
 (define WORKSPACES '())
 
 ;; number of rows in the grid
@@ -44,40 +38,56 @@
 (define COLUMNS 1)
 
 (define* (workspace-grid-configure #:key rows columns workspaces)
+  "Configure workspace grid.
+Parameters:
+	- rows: number of rows in the grid.
+	- columns: number of columns in the grid
+	- workspaces: list of list of workspaces. should match the amount of outputs.
+
+Example: configuring a 2x2 workspace grid for 3 monitors.
+This means 3x2x2= 12 workspaces should be provided.
+
+(workspace-grid-configure #:rows 2 #:columns
+                          '((\"ws-o1-1\" \"ws-o1-2\" \"ws-o1-3\" \"ws-o1-3\")
+                            (\"ws-o2-1\" \"ws-o2-2\" \"ws-o2-3\" \"ws-o2-3\")
+                            (\"ws-o3-1\" \"ws-o3-2\" \"ws-o3-3\" \"ws-o3-3\")))"
   (when rows (set! ROWS rows))
   (when columns (set! COLUMNS columns))
   (when workspaces (set! WORKSPACES workspaces)))
 
 (define* (get-active-workspace-name #:optional (workspaces (sway-get-workspaces)))
-  "get name of active workspace"
+  "Return name of active workspace."
   (cond
    ((null? workspaces) #f)
    ((equal? (sway-workspace-focused (car workspaces)) #t)
     (sway-workspace-name (car workspaces)))
    (else (get-active-workspace-name (cdr workspaces)))))
 
-(define* (get-output-index workspace #:optional (workspaces WORKSPACES) (index 0))
-  "get output index of target workspace"
+(define* (get-output-index workspace-name #:optional (workspaces WORKSPACES) (index 0))
+  "Return output index of target workspace name (workspace-name)"
   (cond
    ((null? workspaces) #f)
-   ((member workspace (car workspaces)) index)
-   (else (get-output-index workspace (cdr workspaces) (+ index 1)))))
+   ((member workspace-name (car workspaces)) index)
+   (else (get-output-index workspace-name (cdr workspaces) (+ index 1)))))
 
-(define* (get-workspace-index workspace #:optional
+(define* (get-workspace-index workspace-name #:optional
                              (workspaces
-                              (list-ref WORKSPACES (get-output-index workspace))))
-  "get index of target workspace"
-  (let* ((memberls (member workspace workspaces)))
+                              (list-ref WORKSPACES (get-output-index workspace-name))))
+  "Return index of target workspace name (workspace-name)."
+  (let* ((memberls (member workspace-name workspaces)))
     (if memberls (- (length workspaces) (length memberls)))))
 
 (define (get-active-workspace-index)
-  "get index of active/focused workspace"
+  "Return index of active/focused workspace."
   (let* ((workspace (get-active-workspace-name)))
     (get-workspace-index workspace)))
 
 ;; available directions, up, right, down, left
 (define* (get-workspace-direction direction #:optional (index -1))
-  "get the index the next workspace after applying the direction"
+  "Return the index the target workspace after applying the given direction.
+Parameters:
+	- direction: can be one of \"up\", \"right\", \"down\", \"left\".
+	- index: the index of the workspace to get the direction from (current by default)."
   (let* ((index (if (< index 0) (get-active-workspace-index) index))
          (current-row (floor (/ index COLUMNS)))
          (current-column (modulo index COLUMNS))
@@ -95,66 +105,76 @@
 (define* (get-workspace-name  #:optional
                               (workspace (get-active-workspace-index))
                               (output (get-output-index (get-active-workspace-name))))
+  "Get workspace name from a given workspace index.
+Parameters:
+	- workspace: workspace index as in configuraiton (by default, current active workspace index).
+	- output: output index as in configuraiton (by default, current active output index).
+
+Note: returned name is based on configured variable WORKSPACES."
   (list-ref (list-ref WORKSPACES output) workspace))
 
 ;; exposed command for easier access
 (define (switch-workspace-up)
+  "Focus workspace up in grid."
   (sway-switch-workspace
    (get-workspace-name
     (get-workspace-direction "up"))))
 
 (define (switch-workspace-right)
+  "Focus workspace right in grid."
   (sway-switch-workspace
    (get-workspace-name
     (get-workspace-direction "right"))))
 
 (define (switch-workspace-down)
+  "Focus workspace down in grid."
   (sway-switch-workspace
    (get-workspace-name
     (get-workspace-direction "down"))))
 
 (define (switch-workspace-left)
+  "Focus workspace left in grid."
   (sway-switch-workspace
    (get-workspace-name
     (get-workspace-direction "left"))))
 
 (define (move-container-to-workspace-up)
+  "Move current container to workspace up in grid and focus it."
   (sway-move-container-to-workspace
    (get-workspace-name
     (get-workspace-direction "up")))
   (switch-workspace-up))
 
 (define (move-container-to-workspace-right)
+  "Move current container to workspace right in grid and focus it."
   (sway-move-container-to-workspace
    (get-workspace-name
     (get-workspace-direction "right")))
   (switch-workspace-right))
 
 (define (move-container-to-workspace-down)
+  "Move current container to workspace down in grid and focus it."
   (sway-move-container-to-workspace
    (get-workspace-name
     (get-workspace-direction "down")))
   (switch-workspace-down))
 
 (define (move-container-to-workspace-left)
+  "Move current container to workspace left in grid and focus it."
   (sway-move-container-to-workspace
    (get-workspace-name
     (get-workspace-direction "left")))
   (switch-workspace-left))
 
 (define (valid-grid? rows columns workspaces)
-  "validate the grid structure"
+  "Validate the grid structure by ensuring the number of workspaces
+matches the number of rowsxcolumns."
   (and (> (length workspaces) 0)
        (equal? (* rows columns) (length (car workspaces)))))
 
 (define (workspace-grid-init)
-  (display "starting workspace-grid\n")
-  (display WORKSPACES)
-  (newline)
+  "Initialize the workspace grid."
+  (format #t "starting workspace-grid\n~a\n" WORKSPACES)
   (if (valid-grid? ROWS COLUMNS WORKSPACES)
-    (display (string-append "successfully started workspace "
-                            (number->string ROWS) "x"
-                            (number->string COLUMNS) "\n"))
-    (display (string-append "workspace grid failed to start the grid configs "
-                            (number->string ROWS) "x"
-                            (number->string COLUMNS) "\n"))))
+      (format #t "successfully started workspace ~ax~a\n" ROWS COLUMNS)
+      (format #t "workspace grid failed to start the grid configs ~ax~a\n" ROWS COLUMNS)))

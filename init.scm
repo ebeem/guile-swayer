@@ -23,8 +23,8 @@
 ;; subscribe to all events
 (sway-subscribe-all)
 
-(set! OUTPUTS '("HDMI-A-2" "DP-1" "DP-2"))
-(set! GROUPS
+(define OUTPUTS '("HDMI-A-2" "DP-1" "DP-2"))
+(define GROUPS
   '(("11-browser" 		"21-browser" 		"31-browser")
     ("12-development" 	"22-development" 	"32-development")
     ("13-databases" 	"23-databases" 		"33-databases")
@@ -35,12 +35,14 @@
     ("18-development" 	"28-development" 	"38-development")
     ("19-media" 		"29-media" 			"39-media")))
 
+(workspace-groups-configure #:groups GROUPS #:outputs OUTPUTS)
 (workspace-groups-init)
 
-(set! ROWS 3)
-(set! COLUMNS 3)
-(set! WORKSPACES (apply map list GROUPS))
+(define ROWS 3)
+(define COLUMNS 3)
+(define WORKSPACES (apply map list GROUPS))
 
+(workspace-grid-configure #:rows ROWS #:columns COLUMNS #:workspaces WORKSPACES)
 (workspace-grid-init)
 
 ;; TODO: load which key module

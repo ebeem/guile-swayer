@@ -273,9 +273,7 @@ Parameters:
 Response:
     An  array of objects corresponding to each command that was parsed. Each
     object has the property success."
-  (display "dispatching: ")
-  (display (string-join commands "\n"))
-  (newline)
+  (format #t "dispatching: ~a\n" (string-join commands "\n"))
 
   (catch-all
    (lambda ()

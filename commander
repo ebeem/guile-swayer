@@ -21,19 +21,17 @@
              (srfi srfi-1))
 
 (define COMMANDS-CLIENT-SOCKET (socket AF_UNIX SOCK_STREAM 0))
-(display (string-append "connecting to " SOCKET-COMMANDS-LISTENER-PATH "\n"))
+(format #t "connecting to ~a\n" SOCKET-COMMANDS-LISTENER-PATH)
 (connect COMMANDS-CLIENT-SOCKET
          (make-socket-address AF_UNIX SOCKET-COMMANDS-LISTENER-PATH))
 (display "connected\n")
 
 (define (send-command command)
-  (display (string-append "sending command: " command "\n"))
+  (format #t "sending command: ~a\n" command)
   (display (write-msg COMMANDS-CLIENT-SOCKET
              RUN-COMMMAND-MSG-ID
              (scm->json-string command)))
   (display "sent\n"))
 
 (define (main args)
-  (display (string-join (cdr args) " "))
-  (newline)
   (send-command (string-join (cdr args) " ")))

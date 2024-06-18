@@ -79,7 +79,7 @@
 
 (define (custom-exception-handler exc command-id payload)
   (display "An error occurred while receiving event data\n")
-  (display (string-append "command: " (number->string command-id) ", payload: " payload)))
+  (format #t "command: ~a, payload ~a\n" command-id payload))
 
 (add-hook! data-received-hook
            (lambda (command-id payload)

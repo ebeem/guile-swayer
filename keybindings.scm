@@ -6,7 +6,7 @@
 
 (define (exec command)
   "execute given shell command"
-  (display (string-append "running " command "\n"))
+  (format #t "running: ~a\n" command)
   (thread-start! (make-thread (lambda () (system command)))))
 
 (define (custom-sway-keybinding-translator key)
@@ -17,11 +17,16 @@
 (define (keybindings-init)
   (kbd-init)
 
-  (configure-sway-keybinding-translator custom-sway-keybinding-translator)
-  (configure-sway-commander-path "~/.config/sway/commander")
+  (define kbd-translator custom-sway-keybinding-translator)
+  ;; FIXME: fix the path of commander here!
+  ;; if this step is not performed, keybindings won't work.
+  (define commander-path "~/.config/sway/commander")
+
+  (general-configure #:keybinding-translator kbd-translator
+                     #:commander-path commander-path)
 
   ;; define root keybindings
-  (sway-define-keys
+  (general-define-keys
    ;; media-keys
    `("XF86AudioLowerVolume" (exec "pactl set-sink-volume @DEFAULT_SINK@ -5%"))
    `("XF86AudioRaiseVolume" (exec "pactl set-sink-volume @DEFAULT_SINK@ +5%"))
@@ -73,13 +78,13 @@
    `("C-s-Space" (exec "rofi -show drun")))
 
   ;; define leader keymap
-  (sway-define-keys
+  (general-define-keys
    #:prefix "s-Space" #:wk "Leader"
    `("o" (exec "rofi -show drun"))
    `("C-g" (sway-mode "default") #:wk "abort")
 
    ;; rofi keymap
-   `(sway-define-keys
+   `(general-define-keys
      #:prefix "r" #:wk "Rofi"
      ("p" (exec "~/.config/rofi/bin/password-manager"))
      ("m" (exec "rofi-mount"))
@@ -93,14 +98,14 @@
      ("S" (exec "~/.config/rofi/bin/sound-output")))
 
    ;; screenshot keymap
-   `(sway-define-keys
+   `(general-define-keys
      #:prefix "s" #:wk "Screenshot"
      ("d" (exec "export XDG_CURRENT_DESKTOP=sway && flameshot gui"))
      ("s" (exec "export XDG_CURRENT_DESKTOP=sway && flameshot screen"))
      ("f" (exec "export XDG_CURRENT_DESKTOP=sway && flameshot full"))
      ("m" (exec "export XDG_CURRENT_DESKTOP=sway && flameshot gui --last-region"))
 
-     (sway-define-keys
+     (general-define-keys
       #:prefix "d" #:wk "DelayScreenshot"
       ("d" (exec "export XDG_CURRENT_DESKTOP=sway && flameshot gui -d 2500"))
       ("s" (exec "export XDG_CURRENT_DESKTOP=sway && flameshot screen -d 2500"))
@@ -108,12 +113,12 @@
       ("l" (exec "export XDG_CURRENT_DESKTOP=sway && flameshot gui -d 2500 --last-region"))))
 
    ;; session keymap
-   `(sway-define-keys
+   `(general-define-keys
      #:prefix "q" #:wk "Session"
      ("q" (sway-exit))
      ("r" (sway-reload)))
 
-   `(sway-define-keys
+   `(general-define-keys
      #:prefix "w" #:wk "Window"
      ("v" (sway-layout SWAY-LAYOUT-SPLITV))
      ("h" (sway-layout SWAY-LAYOUT-SPLITH))

@@ -86,31 +86,54 @@
 (define BAR-STATE-UPDATE-EVENT-REPLY 2147483656)
 (define INPUT-EVENT-REPLY 2147483657)
 
+;; listener thread reference
 (define LISTENER-THREAD #:f)
+;; commands listener thread reference
 (define COMMANDS-LISTENER-THREAD #:f)
 (define MSG-MAGIC "i3-ipc")
 (define MSG-MAGIC-BV (string->utf8 MSG-MAGIC))
 
 ;; TODO: maybe also get from sway and i3 binaries
+;; the path of sway ipc socket
 (define SOCKET-PATH
   (and (getenv "SWAYSOCK")
        (getenv "I3SOCK")))
 
+;; the path of the swayipc command ipc socket 
 (define SOCKET-COMMANDS-LISTENER-PATH
   (string-append (dirname SOCKET-PATH) "/sway-commands-ipc.sock"))
 
-(define COMMAND-SOCKET (socket AF_UNIX SOCK_STREAM 0))
-(connect COMMAND-SOCKET (make-socket-address AF_UNIX SOCKET-PATH))
-(define LISTENER-SOCKET (socket AF_UNIX SOCK_STREAM 0))
-(connect LISTENER-SOCKET (make-socket-address AF_UNIX SOCKET-PATH))
+;; swayipc command ipc socket, this is used to send and
+;; receive keybindings commands to and from swayipc.
 (define COMMANDS-LISTENER-SOCKET (socket AF_UNIX SOCK_STREAM 0))
+
+;; sway command socket, this is used to send commands and queries
+;; to sway via IPC.
+(define COMMAND-SOCKET (socket AF_UNIX SOCK_STREAM 0))
+;; sway listen socket, this is used to listen to subscribed events
+;; from sway via IPC.
+(define LISTENER-SOCKET (socket AF_UNIX SOCK_STREAM 0))
+
+(connect COMMAND-SOCKET (make-socket-address AF_UNIX SOCKET-PATH))
+(connect LISTENER-SOCKET (make-socket-address AF_UNIX SOCKET-PATH))
+
+;; Hashtable of mutexes for synchronization, keeps each socket separate.
+;; This is important to lock sockets while reading/writing.
+;; Without it, sway kept sending invalid messages in case so many
+;; commands/events are triggered.
+(define mutex-table (make-hash-table))
 
 ;; <magic-string> is i3-ipc, for compatibility with i3
 ;; <payload-length> is a 32-bit integer in native byte order
 ;; <payload-type> is a 32-bit integer in native byte order
 (define (encode-msg command-id payload)
+  "Return a bytevector representing a message based on i3/sway IPC protocol.
+Parameters:
+	- command-id: a number representing the id of the command to send.
+	- payload: a json string to send along with the command.
+
+Note: returned format is <magic-string> <payload-length> <payload-type> <payload>"
   (let* ((bv (make-bytevector (+ 14 (string-length payload)))))
-    ;; <magic-string> <payload-length> <payload-type> <payload>
     (bytevector-copy! (string->utf8 "i3-ipc") 0 bv 0 6)
     (bytevector-u32-set! bv 6 (string-length payload) (native-endianness))
     (bytevector-u32-set! bv 10 command-id (native-endianness))
@@ -121,12 +144,22 @@
     bv))
 
 (define (write-msg sock command-id payload)
+  "Encode then send a message based on i3/sway IPC protocol to i3/sway IPC.
+Parameters:
+	- sock: the socket to write the message to.
+	- command-id: a number representing the id of the command to send.
+	- payload: a json string to send along with the command."
+
   (put-bytevector sock (encode-msg command-id payload)))
 
-;; Mutex for synchronization
-(define mutex-table (make-hash-table))
-
 (define (read-msg sock)
+  "Return a list in the format of '(command-id payload).
+It reads and then decode the read message into command-id payload.
+
+Parameters:
+	- sock: the socket to read the message from.
+
+Note: read format is <magic-string> <payload-length> <payload-type> <payload>"
   (let* ((mutex (if (hash-get-handle mutex-table (fileno sock))
                     (cdr (hash-get-handle mutex-table (fileno sock)))
                     (hash-set! mutex-table (fileno sock) (make-mutex)))))
@@ -138,7 +171,23 @@
       (mutex-unlock! mutex)
       (list command-id (or payload "")))))
 
+;; data received: emitted on new data received via ipc.
+;; Parameters:
+;;   - arg1: command-id.
+;;   - arg2: payload.
+(define data-received-hook
+  (make-hook 2))
+
+;; data received: emitted on new command received via ipc.
+;; Parameters:
+;;   - arg1: command-id.
+;;   - arg2: payload.
+(define command-received-hook
+  (make-hook 2))
+
 (define (read-from-socket sock)
+  "Read the message from the given socket.
+Once a message is recieved, the data-received-hook will be triggered."
   (let loop ()
       (let ((data (read-msg sock)))
         (run-hook data-received-hook
@@ -146,23 +195,9 @@
                   (list-ref data 1))
               (loop))))
 
-(define data-received-hook
-  ;; data received: emitted on new data received via ipc.
-
-  ;; Parameters:
-  ;;   - arg1: command-id.
-  ;;   - arg2: payload.
-  (make-hook 2))
-
-(define command-received-hook
-  ;; data received: emitted on new command received via ipc.
-
-  ;; Parameters:
-  ;;   - arg1: command-id.
-  ;;   - arg2: payload.
-  (make-hook 2))
-
 (define (handle-client client)
+  "Client handler, used to read messages from the connected client.
+Once a message is recieved, the command-received-hook will be triggered."
   (let ((port (car client)))
     (let ((data (read-msg port)))
       (run-hook command-received-hook
@@ -173,9 +208,12 @@
     (close-port port)))
 
 (define (custom-exception-handler exc)
+  "Exception handler."
   (display "An error occurred while handling client connection\n"))
 
 (define (start-server-socket sock)
+  "Start a server socket in the given socket.
+This will listne to incoming connections and handle clients in handle-client."
   (listen sock 15)
   (let loop ()
     (let ((client (accept sock)))
@@ -183,13 +221,16 @@
       (loop))))
 
 (define (start-event-listener)
+  "Start the event listener socket."
   (read-from-socket LISTENER-SOCKET))
 
 (define (start-event-listener-thread)
+  "Start the event listener socket in a thread."
   (set! LISTENER-THREAD (make-thread start-event-listener))
   (thread-start! LISTENER-THREAD))
 
 (define (start-commands-listener)
+  "Start the commands listener socket."
   (when (file-exists? SOCKET-COMMANDS-LISTENER-PATH)
     (delete-file SOCKET-COMMANDS-LISTENER-PATH))
 
@@ -197,5 +238,6 @@
   (start-server-socket COMMANDS-LISTENER-SOCKET))
 
 (define (start-commands-listener-thread)
+  "Start the commands listener socket in a thread."
   (set! COMMANDS-LISTENER-THREAD (make-thread start-commands-listener))
   (thread-start! COMMANDS-LISTENER-THREAD))

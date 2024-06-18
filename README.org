@@ -57,7 +57,7 @@ You can assign keybindings that execute Guile code! Obviously, running shell com
   ;; this uses sway-bindsym behind the scenes, but provides a much
   ;; user friendly interface to create complex keybindings structure
   ;; it also allows you to execute guile expressions on trigger.
-  ;; requires configuring commander-path, refere to the FIXME note in keybindings.scm for more details.
+  ;; requires configuring commander-path, refer to the FIXME note in keybindings.scm for more details.
   ;; refer to modules/general.scm for more about how this is done.
   ;; define leader keymap
   (general-define-keys

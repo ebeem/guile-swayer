@@ -9,13 +9,27 @@ I am an =Emacs= user and previously used =StumpWM=, an =X11= window manager writ
 
 I had to migrate to =Wayland= at some point. Being a big fan of =StumpWM=, I tried to replicate a similar environment in one of the =Wayland= window managers. I made some progress with =hyprland= using a set of =Guile= bindings I developed called =hypripc=, but I found that =Hyprland= isn't as stable as =Sway=.
 
+** Quick Test
+
+After cloning this repository, you can immediately test it using the provided =example.scm= file, which demonstrates some of the features available in this package.
+
+The =example.scm= file will:
+
+    - Print the current focused workspace
+    - Add a keybinding (Super+t) that launches Alacritty
+    - Print a message when a workspace change event occurs
+
+#+begin_src bash
+guile example.scm
+#+end_src
+
 ** Quick Overview
 
 *** Query Sway
 
 You can retrieve information about =Sway=, such as list of available =workspaces= or =outputs=. The response will be in Guile records, which you can easily manipulate! (refer to =swayipc/info.scm=)
 
-#+begin_src scheme 
+#+begin_src scheme
 ;; get focused workspace from a list of workspaces
 (define (focused-workspace-name workspaces)
   (cond
@@ -24,22 +38,30 @@ You can retrieve information about =Sway=, such as list of available =workspaces
     (sway-workspace-name (car workspaces)))
     (else (focused-workspace-name (cdr workspaces)))))
 
-(focused-workspace-name (sway-get-workspaces))
+(format #t "output record from function #sway-get-workspaces:\n ~a\n"
+        (sway-get-workspaces))
+
+(format #t "current focused workspace is [~a]\n"
+        (focused-workspace-name (sway-get-workspaces)))
 #+end_src
 
 *** Assign Keybindings
 
 You can assign keybindings that execute Guile code! Obviously, running shell commands is straightforward since you're operating within Guile. Additionally, you have full access to Sway/i3 specific commands (refer to =swayipc/dispatcher.scm=).
 
-#+begin_src scheme 
+#+begin_src scheme
+  ;; sway commands
+  (sway-bindsym "Mod4+t" "exec alacritty")
+
+  ;; general.scm interface (requires some configuration, refere to the FIXME note in keybindings.scm)
   ;; define leader keymap
-  (sway-define-keys
+  (general-define-keys
    #:prefix "s-Space" #:wk "Leader"
    `("o" (exec "rofi -show drun"))
    `("C-g" (sway-mode "default") #:wk "abort")
 
    ;; rofi keymap
-   `(sway-define-keys
+   `(general-define-keys
      #:prefix "r" #:wk "Rofi"
      ("p" (exec "~/.config/rofi/bin/password-manager"))
      ("m" (exec "rofi-mount"))
@@ -53,7 +75,7 @@ You can assign keybindings that execute Guile code! Obviously, running shell com
      ("S" (exec "~/.config/rofi/bin/sound-output")))
 
    ;; window management
-   `(sway-define-keys
+   `(general-define-keys
      #:prefix "w" #:wk "Window"
      ("v" (sway-layout SWAY-LAYOUT-SPLITV))
      ("h" (sway-layout SWAY-LAYOUT-SPLITH))
@@ -66,14 +88,27 @@ You can assign keybindings that execute Guile code! Obviously, running shell com
 
 Certain scenarios necessitate subscribing to events. One example from my =workflow= described below requires this capability. With =swayipc=, you have the ability to listen for events and execute actions in response.
 
-#+begin_src scheme 
+#+begin_src scheme
+  ;; subscribe to events
   (define (workspace-changed workspace-event)
     (let* ((current-tree (sway-workspace-event-current workspace-event))
            (workspace (sway-tree-name current-tree)))
 
-      (display workspace)))
+      (format #t "workspace changed to ~a!\n" workspace)))
 
-    (add-hook! sway-workspace-hook workspace-changed)
+  (add-hook! sway-workspace-hook workspace-changed)
+#+end_src
+
+Note: To receive any events, you must subscribe to them. You can subscribe to individual events that interest you or to all avilable events. Without subscribing and running the event listener in your =init.scm=, your hooks will not receive any events.
+
+The event listener thread is a Unix socket that waits for sway events. This must be executed, preferably as the last expression in your =init.scm= file, because =thread-join= will block execution. This blocking is necessary to keep the listener active and prevent the script from exiting.
+
+#+begin_src scheme
+  ;; subscribe to all events
+  (sway-subscribe-all)
+
+  (start-event-listener-thread)
+  (thread-join! LISTENER-THREAD)
 #+end_src
 
 ** Documentation (WIP)
@@ -119,7 +154,7 @@ exec_always "~/.config/sway/init.scm"
 
 2- I plan to publish a module for =swayipc=, it's currently not hosted anywhere. You'll need to add the module to your =load path=. Additionally, =swayipc= includes another patched Guile library called =guile-json=, which is embedded for now. In the future, this will be included as a separate dependency rather than embedded.
 
-#+begin_src scheme 
+#+begin_src scheme
 (add-to-load-path
  (dirname (or (current-filename)
               (string-append (getenv "HOME") "/.config/sway/init.scm"))))

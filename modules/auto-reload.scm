@@ -1,4 +1,5 @@
-(define-module (modules which-key)
+;; TODO
+(define-module (modules auto-reload)
   #:use-module (swayipc dispatcher)
   #:export ())
 

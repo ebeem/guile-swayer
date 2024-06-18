@@ -16,8 +16,7 @@
   #:use-module (swayipc dispatcher)
   #:use-module (swayipc events)
 
-  #:export (
-            WORKSPACES
+  #:export (WORKSPACES
             COLUMNS
             ROWS
             workspace-grid-configure

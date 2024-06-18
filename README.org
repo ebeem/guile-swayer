@@ -60,6 +60,12 @@ You can assign keybindings that execute Guile code! Obviously, running shell com
   ;; requires configuring commander-path, refer to the FIXME note in keybindings.scm for more details.
   ;; refer to modules/general.scm for more about how this is done.
   ;; define leader keymap
+
+  (define (exec command)
+    "execute given shell command"
+    (format #t "running: ~a\n" command)
+    (system command))
+
   (general-define-keys
    #:prefix "s-Space" #:wk "Leader"
    `("o" (exec "rofi -show drun"))
@@ -135,12 +141,12 @@ Clone this repository to your =~/.config/sway=
 | sjson                        | A patched version of =guile-json=; planned to be a separate dependency in the future (not embedded).        |
 |------------------------------+-----------------------------------------------------------------------------------------------------------|
 | modules/                     | Directory containing modules for extending Sway using =swayipc=.                                            |
-| modules/auto-reload.scm      | Watcher to automatically reload Sway when Guile files change.                                       |
+| modules/auto-reload.scm      | Watcher to automatically reload Sway when Guile files change.                                             |
 | modules/general.scm          | Inspired by Emacs =general= package; provides an easy interface for assigning keybindings.                  |
-| modules/kbd.scm              | Translates Emacs-like keybindings to be compatible with =Sway=.                                        |
+| modules/kbd.scm              | Translates Emacs-like keybindings to be compatible with =Sway=.                                             |
 | modules/which-key.scm        | TODO: Inspired by Emacs =which-key= package; enhances keybinding discovery and management.                  |
 | modules/workspace-grid.scm   | Configures workspaces in a grid and enables movement between them in specified directions (see workflow). |
-| modules/workspace-groups.scm | Spans/synchronizes workspaces across monitors (see workflow).                                        |
+| modules/workspace-groups.scm | Spans/synchronizes workspaces across monitors (see workflow).                                             |
 |------------------------------+-----------------------------------------------------------------------------------------------------------|
 | swayipc/                     | Directory containing the core code for =swayipc=, facilitating communication with Sway.                     |
 | swayipc/connection           | Establishes =IPC= connection for handling events and commands with Sway.                                    |

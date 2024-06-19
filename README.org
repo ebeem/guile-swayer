@@ -35,7 +35,7 @@ You can retrieve information about =Sway=, such as list of available =workspaces
   (cond
     ((null? workspaces) #f)
     ((equal? #t (sway-workspace-focused (car workspaces)))
-    (sway-workspace-name (car workspaces)))
+     (sway-workspace-name (car workspaces)))
     (else (focused-workspace-name (cdr workspaces)))))
 
 (format #t "output record from function #sway-get-workspaces:\n ~a\n"
@@ -59,8 +59,8 @@ You can assign keybindings that execute Guile code! Obviously, running shell com
   ;; it also allows you to execute guile expressions on trigger.
   ;; requires configuring commander-path, refer to the FIXME note in keybindings.scm for more details.
   ;; refer to modules/general.scm for more about how this is done.
-  ;; define leader keymap
 
+  ;; define leader keymap
   (define (exec command)
     "execute given shell command"
     (format #t "running: ~a\n" command)
@@ -110,7 +110,7 @@ Certain scenarios necessitate subscribing to events. One example from my =workfl
   (add-hook! sway-workspace-hook workspace-changed)
 #+end_src
 
-Note: To receive any events, you must subscribe to them. You can subscribe to individual events that interest you or to all avilable events. Without subscribing and running the event listener in your =init.scm=, your hooks will not receive any events.
+Note: To receive any events, you must subscribe to them. You can subscribe to individual events that interest you or to all available events. Without subscribing and running the event listener in your =init.scm=, your hooks will not receive any events.
 
 The event listener thread is a Unix socket that waits for sway events. This must be executed, preferably as the last expression in your =init.scm= file, because =thread-join= will block execution. This blocking is necessary to keep the listener active and prevent the script from exiting.
 
@@ -131,6 +131,7 @@ Clone this repository to your =~/.config/sway=
 
 *** Project Structure
 
+|------------------------------+-----------------------------------------------------------------------------------------------------------|
 | File                         | Description                                                                                               |
 |------------------------------+-----------------------------------------------------------------------------------------------------------|
 | init.scm                     | Main entry point for configuring Sway using Guile.                                                        |
@@ -154,13 +155,17 @@ Clone this repository to your =~/.config/sway=
 | swayipc/events               | Provides =Gulie Hooks= for all available =Sway= events.                                                       |
 | swayipc/info                 | Provides =Guile functions= for querying Sway's current state and information.                               |
 | swayipc/records              | Provides =Guile records= representing Sway's data structures.                                               |
+|------------------------------+-----------------------------------------------------------------------------------------------------------|
 
-1- You can start your =swayipc= configurations from the =REPL=, =terminal=, or a configuration file.
-Remember: for debugging or displaying output, it's best to run Guile from the REPL or terminal. You can also pipe the output to a file if you desire.
+1- You can start your =swayipc= configurations from the =REPL=, =terminal=, or a =configuration file=.
+Remember: for debugging or displaying output, it's best to run Guile from the =REPL= or =terminal=. You can also pipe the output to a file if you desire.
 
 #+begin_src conf 
-# from sway config file
-exec_always "~/.config/sway/init.scm"
+# good idea to kill all current guile swayipc instances first
+exec_always "pkill -f '.*guile.*sway/init.scm'"
+
+# then run a fresh instance, sleeping ensures a more reilable execution
+exec_always "sleep 0.5 && ~/.config/sway/init.scm"
 #+end_src
 
 2- I plan to publish a module for =swayipc=, it's currently not hosted anywhere. You'll need to add the module to your =load path=. Additionally, =swayipc= includes another patched Guile library called =guile-json=, which is embedded for now. In the future, this will be included as a separate dependency rather than embedded.
@@ -210,5 +215,28 @@ Note: this behavior is achieved  via =modules/workspace-grid.scm=
 My workspaces function as groups or tasks that span across all three monitors in my setup. For example, if I switch to my =communication= workspace on one monitor, I want all monitors to switch to their respective =communication= workspaces. This means if I have WhatsApp on monitor #1, Discord on monitor #2, and IRC on monitor #3, they should all align to their designated communication workspace when I switch tasks.
 
 Similarly, this setup extends to projects I work on. If I focus on my dotfiles, I want all monitors to switch to the workspace dedicated to that task. The same principle applies to game development or any other specific task or project workspace I engage with.
+
+Normal workspaces
+#+begin_src 
+  | ws#1 | ws#2 | ws#3 | ws#4 | ws#5 | ws#6 |
+#+end_src
+
+Grouped workspaces (3 monitors)
+#+begin_src
+  | 		  ws#1 			 | 		     ws#2 			|
+  |-----------------------------------------------------|
+  | ws#1-1 & ws#1-2 & ws#1-3 | ws#2-1 & ws#2-2 & ws#2-3 |
+#+end_src
+
+Example of navigation into a workspace (same behavior regardless of the method used to switch workspaces):
+
+#+begin_src 
+  ws#1> go to ws#2-1
+  ws#2> go to ws#2-2 (same group, no switching)
+  ws#2> go to ws#1-3
+  ws#1> ..
+#+end_src
+
+You can partially configure workspace groups to span or sync only some workspaces. This allows you to have workspaces that do not span and others that do, with the ability to pin specific workspaces to their monitors when focused.
 
 Note: this behavior is achieved  via =modules/workspace-groups.scm= 

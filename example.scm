@@ -21,7 +21,7 @@
   (cond
     ((null? workspaces) #f)
     ((equal? #t (sway-workspace-focused (car workspaces)))
-    (sway-workspace-name (car workspaces)))
+     (sway-workspace-name (car workspaces)))
     (else (focused-workspace-name (cdr workspaces)))))
 
 (format #t "output record from function #sway-get-workspaces:\n ~a\n"

@@ -64,31 +64,32 @@ This means 3x2x2= 12 workspaces should be provided.
    (else (get-active-workspace-name (cdr workspaces)))))
 
 (define* (get-output-index workspace-name #:optional (workspaces WORKSPACES) (index 0))
-  "Return output index of target workspace name (workspace-name)"
+  "Return output index of target workspace name"
   (cond
-   ((null? workspaces) #f)
+   ((null? workspace-name) 0)
+   ((null? workspaces) 0)
    ((member workspace-name (car workspaces)) index)
    (else (get-output-index workspace-name (cdr workspaces) (+ index 1)))))
 
 (define* (get-workspace-index workspace-name #:optional
                              (workspaces
                               (list-ref WORKSPACES (get-output-index workspace-name))))
-  "Return index of target workspace name (workspace-name)."
+  "Return index of target workspace name."
   (let* ((memberls (member workspace-name workspaces)))
-    (if memberls (- (length workspaces) (length memberls)))))
+    (if memberls (- (length workspaces) (length memberls)) 0)))
 
 (define (get-active-workspace-index)
   "Return index of active/focused workspace."
-  (let* ((workspace (get-active-workspace-name)))
-    (get-workspace-index workspace)))
+  (let* ((workspace (get-active-workspace-name (sway-get-workspaces))))
+    (if workspace (get-workspace-index workspace) 0)))
 
 ;; available directions, up, right, down, left
-(define* (get-workspace-direction direction #:optional (index -1))
+(define* (get-workspace-direction direction #:optional index)
   "Return the index the target workspace after applying the given direction.
 Parameters:
 	- direction: can be one of \"up\", \"right\", \"down\", \"left\".
 	- index: the index of the workspace to get the direction from (current by default)."
-  (let* ((index (if (< index 0) (get-active-workspace-index) index))
+  (let* ((index (or index (get-active-workspace-index)))
          (current-row (floor (/ index COLUMNS)))
          (current-column (modulo index COLUMNS))
          (target-row

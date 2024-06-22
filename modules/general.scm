@@ -15,9 +15,9 @@
             general-submaps
             general-command-received-hook))
 
-(define general-command-prefix "echo /general ")
+(define general-command-prefix "/general ")
 (define general-command-signature
-  (string-append "exec " general-command-prefix))
+  (string-append "nop " general-command-prefix))
 
 ;; Local copy of keybindings configured by general, it's recommended to
 ;; only use general to assign keybindings, otherwise this hashtable won't

@@ -13,7 +13,7 @@
             general-define-key
             general-keybindings
             general-submaps
-            command-received-hook))
+            general-command-received-hook))
 
 (define general-command-prefix "echo /general ")
 (define general-command-signature
@@ -35,7 +35,7 @@
 ;; data received: emitted on new command received via bindings.
 ;; Parameters:
 ;;   - arg1: commandd.
-(define command-received-hook
+(define general-command-received-hook
   (make-hook 1))
 
 (define (general-keybinding-translator key)
@@ -60,7 +60,7 @@ Parameters:
                      ""))
          (general-command (equal? prefix general-command-signature)))
     (when general-command
-      (run-hook command-received-hook
+      (run-hook general-command-received-hook
                 (hex->string
                  (substring command (string-length general-command-signature)))))))
 
@@ -69,7 +69,7 @@ Parameters:
   (add-hook! sway-binding-hook binding-changed)
 
   ;; add a hook to listen to received commands
-  (add-hook! command-received-hook
+  (add-hook! general-command-received-hook
              (lambda (command)
                (format #t "executing command ~a\n" command)
                (with-exception-handler
@@ -128,7 +128,7 @@ Parameters:
          (command (string-append type " " key " " (general-command (exp->string exp))))
          (esc (string-append type " " key " " (general-command (exp->string `(and ,exp (sway-mode "default")))))))
 
-    (hash-set! general-keybindings chord '(key exp wk submap))
+    (hash-set! general-keybindings chord (list key exp wk submap))
     (if (equal? submap "default")
       (dispatch-command command)
       (begin
@@ -168,7 +168,7 @@ Parameters:
 
     (if submap
         ;; if submap key is provided, then define a submap (ignore exp)
-        (define-submap chord wk submap
+        (define-submap chord submap submap
           (cdr (find-submap chord-ls)))
         ;; otherwise, define a keybinding with exp
         (define-keybindings chord exp wk

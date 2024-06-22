@@ -10,6 +10,7 @@
              (modules workspace-groups)
              (modules workspace-grid)
              (modules auto-reload)
+             (modules which-key)
              (swayipc connection)
              (swayipc records)
              (swayipc info)
@@ -51,7 +52,37 @@
                        `(,(string-append (getenv "HOME") "/.config/sway/")))
 (auto-reload-init)
 
-;; TODO: load which key module
+;; init which-key
+(which-key-configure #:delay-idle 1.2)
+(which-key-init)
+
+(define (show-rofi-message msg)
+  (hide-rofi-message)
+  (display (format #f "rofi -e \"~a\"" msg))
+  (system (format #f "rofi -e \"~a\"" msg)))
+
+(define (hide-rofi-message)
+  (system "pkill -f '.*rofi -e.*'"))
+
+(define (show-which-key submap bindings)
+  ;; show your which-key viewer (rofi, eww, etc.)
+  (format #t "Displaying Submap ~a Bindings:\n" submap)
+  (let ((message ""))
+    (for-each
+     (lambda (ls)
+       (let ((nmsg (format #f "    - ~a -> ~a\n" (list-ref ls 1) (list-ref ls 3))))
+        (display nmsg)
+        (set! message (string-append message nmsg))))
+     bindings)
+    (show-rofi-message message)))
+
+(define (hide-which-key submap)
+  ;; hide your which-key viewer (rofi, eww, etc.)
+  (format #t "Hiding Submap Bindings:\n")
+  (hide-rofi-message))
+
+(add-hook! which-key-display-keybindings-hook show-which-key)
+(add-hook! which-key-hide-keybindings-hook hide-which-key)
 
 (start-event-listener-thread)
 (thread-join! LISTENER-THREAD)

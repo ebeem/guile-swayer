@@ -143,7 +143,7 @@ Clone this repository to your =~/.config/sway=
 | modules/auto-reload.scm      | Watcher to automatically reload Sway when Guile files change.                                             |
 | modules/general.scm          | Inspired by Emacs =general= package; provides an easy interface for assigning keybindings.                  |
 | modules/kbd.scm              | Translates Emacs-like keybindings to be compatible with =Sway=.                                             |
-| modules/which-key.scm        | TODO: Inspired by Emacs =which-key= package; enhances keybinding discovery and management.                  |
+| modules/which-key.scm        | Inspired by Emacs =which-key= package; enhances keybinding discovery and management.                  |
 | modules/workspace-grid.scm   | Configures workspaces in a grid and enables movement between them in specified directions (see workflow). |
 | modules/workspace-groups.scm | Spans/synchronizes workspaces across monitors (see workflow).                                             |
 |------------------------------+-----------------------------------------------------------------------------------------------------------|

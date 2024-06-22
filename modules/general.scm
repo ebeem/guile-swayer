@@ -183,10 +183,15 @@ For example:
 
 (define (custom-exception-handler exc command-id payload)
   "Exception handler for evaluating expressions from commander."
-  (format #t "An error occurd while executing the expression: ~a\n" (exp->string exc))
-  (format #t "command: ~a, payload: ~a\n" command-id payload))
+  (format #t "An error occurd while executing the received
+general command: command: ~a, payload: ~a\n" command-id payload)
+  (format #t "exception: ~a\n" exc))
 
 ;; add a hook to listen to received commands (usually from commander)
 (add-hook! command-received-hook
            (lambda (command-id payload)
-            (eval-string (json-string->scm payload))))
+             (with-exception-handler
+                 (lambda (exc)
+                   (custom-exception-handler exc command-id payload))
+               (lambda () (eval-string (json-string->scm payload)))
+               #:unwind? #t)))

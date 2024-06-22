@@ -20,14 +20,14 @@
             sway-get-seats))
 
 (define (custom-exception-handler exc command-id payload)
-  (format #t "An error occurred: ~a \n" (exp->string exc))
+  (format #t "An error occurred: ~a \n" exc)
   (format #t "command: ~a, payload: ~a\n" command-id payload))
 
 (define (sway-send-query message-id payload)
   "returns the ipc response from sway after sending the message-id and payload"
   (with-exception-handler
               (lambda (exc)
-                (custom-exception-handler exc command-id payload))
+                (custom-exception-handler exc message-id payload))
                (lambda () (begin
                             (write-msg COMMAND-SOCKET
                                       message-id

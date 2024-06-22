@@ -20,6 +20,7 @@
             sway-output-hook
             sway-mode-hook
             sway-window-hook
+            sway-binding-hook
             sway-bar-config-hook
             sway-shutdown-hook
             sway-tick-hook
@@ -79,7 +80,7 @@
 
 (define (custom-exception-handler exc command-id payload)
   (display "An error occurred while receiving event data\n")
-  (format #t "command: ~a, payload ~a\n" command-id payload))
+  (format #t "~a\ncommand: ~a, payload ~a\n" exc command-id payload))
 
 (add-hook! data-received-hook
            (lambda (command-id payload)

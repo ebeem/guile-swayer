@@ -45,14 +45,6 @@
             start-event-listener-thread
             start-event-listener
             data-received-hook
-            command-received-hook
-
-            SOCKET-COMMANDS-LISTENER-PATH
-            COMMANDS-LISTENER-SOCKET
-            COMMANDS-LISTENER-THREAD
-            start-commands-listener-thread
-            start-commands-listener
-
             write-msg
             read-msg
             encode-msg))
@@ -103,19 +95,15 @@
 (define SOCKET-COMMANDS-LISTENER-PATH
   (string-append (dirname SOCKET-PATH) "/sway-commands-ipc.sock"))
 
-;; swayipc command ipc socket, this is used to send and
-;; receive keybindings commands to and from swayipc.
-(define COMMANDS-LISTENER-SOCKET (socket AF_UNIX SOCK_STREAM 0))
+;; sway listen socket, this is used to listen to subscribed events
+;; from sway via IPC.
+(define LISTENER-SOCKET (socket AF_UNIX SOCK_STREAM 0))
+(connect LISTENER-SOCKET (make-socket-address AF_UNIX SOCKET-PATH))
 
 ;; sway command socket, this is used to send commands and queries
 ;; to sway via IPC.
 (define COMMAND-SOCKET (socket AF_UNIX SOCK_STREAM 0))
-;; sway listen socket, this is used to listen to subscribed events
-;; from sway via IPC.
-(define LISTENER-SOCKET (socket AF_UNIX SOCK_STREAM 0))
-
 (connect COMMAND-SOCKET (make-socket-address AF_UNIX SOCKET-PATH))
-(connect LISTENER-SOCKET (make-socket-address AF_UNIX SOCKET-PATH))
 
 ;; Hashtable of mutexes for synchronization, keeps each socket separate.
 ;; This is important to lock sockets while reading/writing.
@@ -178,13 +166,6 @@ Note: read format is <magic-string> <payload-length> <payload-type> <payload>"
 (define data-received-hook
   (make-hook 2))
 
-;; data received: emitted on new command received via ipc.
-;; Parameters:
-;;   - arg1: command-id.
-;;   - arg2: payload.
-(define command-received-hook
-  (make-hook 2))
-
 (define (read-from-socket sock)
   "Read the message from the given socket.
 Once a message is recieved, the data-received-hook will be triggered."
@@ -195,31 +176,6 @@ Once a message is recieved, the data-received-hook will be triggered."
                   (list-ref data 1))
               (loop))))
 
-(define (handle-client client)
-  "Client handler, used to read messages from the connected client.
-Once a message is recieved, the command-received-hook will be triggered."
-  (let ((port (car client)))
-    (let ((data (read-msg port)))
-      (run-hook command-received-hook
-                (list-ref data 0)
-                (list-ref data 1)))
-
-    ;; Close the connection
-    (close-port port)))
-
-(define (custom-exception-handler exc)
-  "Exception handler."
-  (display "An error occurred while handling client connection\n"))
-
-(define (start-server-socket sock)
-  "Start a server socket in the given socket.
-This will listne to incoming connections and handle clients in handle-client."
-  (listen sock 15)
-  (let loop ()
-    (let ((client (accept sock)))
-      (handle-client client)
-      (loop))))
-
 (define (start-event-listener)
   "Start the event listener socket."
   (read-from-socket LISTENER-SOCKET))
@@ -228,16 +184,3 @@ This will listne to incoming connections and handle clients in handle-client."
   "Start the event listener socket in a thread."
   (set! LISTENER-THREAD (make-thread start-event-listener))
   (thread-start! LISTENER-THREAD))
-
-(define (start-commands-listener)
-  "Start the commands listener socket."
-  (when (file-exists? SOCKET-COMMANDS-LISTENER-PATH)
-    (delete-file SOCKET-COMMANDS-LISTENER-PATH))
-
-  (bind COMMANDS-LISTENER-SOCKET (make-socket-address AF_UNIX SOCKET-COMMANDS-LISTENER-PATH))
-  (start-server-socket COMMANDS-LISTENER-SOCKET))
-
-(define (start-commands-listener-thread)
-  "Start the commands listener socket in a thread."
-  (set! COMMANDS-LISTENER-THREAD (make-thread start-commands-listener))
-  (thread-start! COMMANDS-LISTENER-THREAD))

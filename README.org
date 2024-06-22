@@ -57,7 +57,6 @@ You can assign keybindings that execute Guile code! Obviously, running shell com
   ;; this uses sway-bindsym behind the scenes, but provides a much
   ;; user friendly interface to create complex keybindings structure
   ;; it also allows you to execute guile expressions on trigger.
-  ;; requires configuring commander-path, refer to the FIXME note in keybindings.scm for more details.
   ;; refer to modules/general.scm for more about how this is done.
 
   ;; define leader keymap
@@ -137,7 +136,6 @@ Clone this repository to your =~/.config/sway=
 | init.scm                     | Main entry point for configuring Sway using Guile.                                                        |
 | behavior.scm                 | Loaded by =init.scm=; modifies parameters and behavior of Sway.                                             |
 | keybindings.scm              | Loaded by =init.scm=; adds custom keybindings to Sway.                                                      |
-| commander                    | Guile script to send commands to =swayipc= (facilitates keybinding functionality).                          |
 | config                       | Sway configuration file; typically used to invoke =init.scm=.                                               |
 | sjson                        | A patched version of =guile-json=; planned to be a separate dependency in the future (not embedded).        |
 |------------------------------+-----------------------------------------------------------------------------------------------------------|

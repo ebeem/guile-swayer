@@ -1,16 +1,23 @@
 (define-module (modules general)
   #:use-module (sjson parser)
   #:use-module (swayipc dispatcher)
-  #:use-module (swayipc connection)
+  #:use-module (swayipc events)
+  #:use-module (swayipc records)
   #:use-module (srfi srfi-18)
   #:use-module (ice-9 hash-table)
+  #:use-module (ice-9 string-fun)
   #:export (general-keybinding-translator
-            general-commander-path
             general-configure
+            general-init
             general-define-keys
             general-define-key
             general-keybindings
-            general-submaps))
+            general-submaps
+            command-received-hook))
+
+(define general-command-prefix "echo /general ")
+(define general-command-signature
+  (string-append "exec " general-command-prefix))
 
 ;; Local copy of keybindings configured by general, it's recommended to
 ;; only use general to assign keybindings, otherwise this hashtable won't
@@ -25,29 +32,51 @@
 ;; add default submap, this is the default submap in sway
 (hash-set! general-submaps "" "default")
 
+;; data received: emitted on new command received via bindings.
+;; Parameters:
+;;   - arg1: commandd.
+(define command-received-hook
+  (make-hook 1))
+
 (define (general-keybinding-translator key)
   "Translate a given key, passing a function can enable easier keybindings
 like emacs key chords (refer to module modules/kbd.scm). The default implementation
 doesn't modify passed keybindings"
   key)
 
-;; The path of commander executable, it's used to send back scheme expressions
-;; via unix socket.
-(define general-commander-path
-  (if current-filename
-      (string-append (dirname (dirname current-filename)) "/commander")
-      "commander"))
-
-(define* (general-configure #:key keybinding-translator commander-path)
-  "Configure keybinding-translator (refer to general-keybinding-translator) and
-commander-path (refer to 'general-commander-path).
+(define* (general-configure #:key keybinding-translator)
+  "Configure keybinding-translator (refer to general-keybinding-translator)
 Parameters:
-  - keybinding-translator: a function that takes a key and returns the translated version.
-  - commander-path: a path to the commander executable to be used to send keybindings commands."
+  - keybinding-translator: a function that takes a key and returns the translated version."
   (when keybinding-translator
-    (set! general-keybinding-translator keybinding-translator))
-  (when commander-path
-    (set! general-commander-path commander-path)))
+    (set! general-keybinding-translator keybinding-translator)))
+
+(define (binding-changed binding-event)
+  (let* ((command (sway-binding-event-binding-command
+                   (sway-binding-event-binding binding-event)))
+         (prefix (if (> (string-length command)
+                        (string-length general-command-signature))
+                     (substring command 0 (string-length general-command-signature))
+                     ""))
+         (general-command (equal? prefix general-command-signature)))
+    (when general-command
+      (run-hook command-received-hook
+                (hex->string
+                 (substring command (string-length general-command-signature)))))))
+
+(define (general-init)
+  ;; add sway bindings event hook
+  (add-hook! sway-binding-hook binding-changed)
+
+  ;; add a hook to listen to received commands
+  (add-hook! command-received-hook
+             (lambda (command)
+               (format #t "executing command ~a\n" command)
+               (with-exception-handler
+                   (lambda (exc)
+                     (custom-exception-handler exc command))
+                 (lambda () (eval-string command))
+                 #:unwind? #t))))
 
 (define (exp->string exp)
   "Convert a given expression exp to a string."
@@ -69,7 +98,7 @@ Parameters:
     (format #t "define submap ~a\n" chord)
     (hash-set! general-submaps chord submap)
     (define-keybindings chord
-      `(sway-mode ,submap)
+      (list `sway-mode submap)
       wk parent-submap)
     (define-keybindings (string-append chord " Esc")
       `(sway-mode "default")
@@ -81,8 +110,8 @@ Parameters:
 
 (define (general-command exp-str)
   "Execute a general command (scheme expression)"
-  (string-append "exec '" general-commander-path " "
-                 (exp->string exp-str) "'"))
+  (string-append general-command-signature
+                 (string->hex exp-str)))
 
 (define* (define-keybindings chord exp wk submap)
   "Define a sway keybinding.
@@ -91,6 +120,7 @@ Parameters:
 	- exp: expression to execute when the chord is triggered.
 	- wk: which-key's description.
 	- submap: the name of the submap."
+  (format #t "define-keybindings ~a with expression `~a`\n" chord exp)
   (let* ((chord-ls (map general-keybinding-translator
                         (string-split chord #\Space)))
          (key (car (last-pair chord-ls)))
@@ -182,16 +212,39 @@ For example:
        args))
 
 (define (custom-exception-handler exc command-id payload)
-  "Exception handler for evaluating expressions from commander."
+  "Exception handler for evaluating expressions."
   (format #t "An error occurd while executing the received
 general command: command: ~a, payload: ~a\n" command-id payload)
   (format #t "exception: ~a\n" exc))
 
-;; add a hook to listen to received commands (usually from commander)
-(add-hook! command-received-hook
-           (lambda (command-id payload)
-             (with-exception-handler
-                 (lambda (exc)
-                   (custom-exception-handler exc command-id payload))
-               (lambda () (eval-string (json-string->scm payload)))
-               #:unwind? #t)))
+;; FIXME: there must be some guile built-in function to
+;; base64 encode or convert to hex
+(define (char->hex char)
+  "Convert a character to hex."
+  (let ((hex (number->string (char->integer char) 16)))
+    (if (< (string-length hex) 2)
+        (string-append "0" hex)
+        hex)))
+
+(define (hex->char hex-pair)
+  "Convert a hex to character."
+  (integer->char (string->number hex-pair 16)))
+
+(define (string->hex str)
+  "Convert a string to hex."
+  (let loop ((chars (string->list str))
+             (result '()))
+    (if (null? chars)
+        (string-concatenate (reverse result))
+        (loop (cdr chars) (cons (char->hex (car chars)) result)))))
+
+(define (hex->string hex-str)
+  "Convert a hex to string."
+  (let loop ((chars (string->list hex-str))
+             (result '()))
+    (if (null? chars)
+        (list->string (reverse result))
+        (let ((char1 (car chars))
+              (char2 (cadr chars)))
+          (loop (cddr chars)
+                (cons (hex->char (string char1 char2)) result))))))

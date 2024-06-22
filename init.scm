@@ -9,6 +9,7 @@
              (srfi srfi-18)
              (modules workspace-groups)
              (modules workspace-grid)
+             (modules auto-reload)
              (swayipc connection)
              (swayipc records)
              (swayipc info)
@@ -46,9 +47,11 @@
 (workspace-grid-configure #:rows ROWS #:columns COLUMNS #:workspaces WORKSPACES)
 (workspace-grid-init)
 
+(auto-reload-configure #:directories
+                       `(,(string-append (getenv "HOME") "/.config/sway/")))
+(auto-reload-init)
+
 ;; TODO: load which key module
 
-(start-commands-listener-thread)
 (start-event-listener-thread)
 (thread-join! LISTENER-THREAD)
-(thread-join! COMMANDS-LISTENER-THREAD)

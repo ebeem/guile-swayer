@@ -11,16 +11,16 @@ I had to migrate to =Wayland= at some point. Being a big fan of =StumpWM=, I tri
 
 ** Quick Test
 
-After cloning this repository, you can immediately test it using the provided =example.scm= file, which demonstrates some of the features available in this package.
+After cloning this repository, you can immediately test it using the provided =examples/playground/example.scm= file in the directory, which demonstrates some of the features available in this package.
 
-The =example.scm= file will:
+The =examples/playground/example.scm= file will:
 
     - Print the current focused workspace
     - Add a keybinding (Super+t) that launches Alacritty
     - Print a message when a workspace change event occurs
 
 #+begin_src bash
-guile example.scm
+guile ./examples/playground/example.scm
 #+end_src
 
 ** Quick Overview
@@ -123,37 +123,49 @@ The event listener thread is a Unix socket that waits for sway events. This must
 
 ** Documentation (WIP)
 
-Most of the source code is documented. You can refer to =init.scm= for a configuration sample. Here are some important points to consider before hacking your Sway setup:
+Most of the source code is documented. You can refer to =examples/stumpwm-like/init.scm= for a complex stumpwm like configuration example. Here are some important points to consider before hacking your Sway setup
 
 *** Quick Start
 Clone this repository to your =~/.config/sway=
+It's important to know where you clone the repo as you will have to reference it later by path to make a perfect setup.
 
 *** Project Structure
 
-|------------------------------+-----------------------------------------------------------------------------------------------------------|
-| File                         | Description                                                                                               |
-|------------------------------+-----------------------------------------------------------------------------------------------------------|
-| init.scm                     | Main entry point for configuring Sway using Guile.                                                        |
-| behavior.scm                 | Loaded by =init.scm=; modifies parameters and behavior of Sway.                                             |
-| keybindings.scm              | Loaded by =init.scm=; adds custom keybindings to Sway.                                                      |
-| config                       | Sway configuration file; typically used to invoke =init.scm=.                                               |
-| sjson                        | A patched version of =guile-json=; planned to be a separate dependency in the future (not embedded).        |
-|------------------------------+-----------------------------------------------------------------------------------------------------------|
-| modules/                     | Directory containing modules for extending Sway using =swayipc=.                                            |
-| modules/auto-reload.scm      | Watcher to automatically reload Sway when Guile files change.                                             |
-| modules/general.scm          | Inspired by Emacs =general= package; provides an easy interface for assigning keybindings.                  |
-| modules/kbd.scm              | Translates Emacs-like keybindings to be compatible with =Sway=.                                             |
-| modules/which-key.scm        | Inspired by Emacs =which-key= package; enhances keybinding discovery and management.                  |
-| modules/workspace-grid.scm   | Configures workspaces in a grid and enables movement between them in specified directions (see workflow). |
-| modules/workspace-groups.scm | Spans/synchronizes workspaces across monitors (see workflow).                                             |
-|------------------------------+-----------------------------------------------------------------------------------------------------------|
-| swayipc/                     | Directory containing the core code for =swayipc=, facilitating communication with Sway.                     |
-| swayipc/connection           | Establishes =IPC= connection for handling events and commands with Sway.                                    |
-| swayipc/dispatcher           | Provides =Guile functions= for all available =Sway= commands.                                                 |
-| swayipc/events               | Provides =Gulie Hooks= for all available =Sway= events.                                                       |
-| swayipc/info                 | Provides =Guile functions= for querying Sway's current state and information.                               |
-| swayipc/records              | Provides =Guile records= representing Sway's data structures.                                               |
-|------------------------------+-----------------------------------------------------------------------------------------------------------|
+****** Root Directory
+
+|------------+-----------------------------------------------------------------|
+| File       | Description                                                     |
+|------------+-----------------------------------------------------------------|
+| examples   | Examples of configurations the you can refer to for inspiration |
+| modules    | Directory containing modules for extending Sway using =swayipc=.  |
+| sjson      | A patched version of =guile-json= (temporarily).                  |
+| swayipc    | Directory containing the core code for =swayipc.                |
+| README.org | This readme file                                                |
+|------------+-----------------------------------------------------------------|
+
+****** swayipc Directory
+|------------+-----------------------------------------------------------------------------|
+| File       | Description                                                                 |
+|------------+-----------------------------------------------------------------------------|
+| connection | Establishes =IPC= connection for handling events and commands with Sway.      |
+| dispatcher | Provides =Guile functions= for all available =Sway= commands.                   |
+| events     | Provides =Gulie Hooks= for all available =Sway= events.                         |
+| info       | Provides =Guile functions= for querying Sway's current state and information. |
+| records    | Provides =Guile records= representing Sway's data structures.                 |
+|------------+-----------------------------------------------------------------------------|
+
+****** Modules Directory
+|----------------------+--------------------------------------------------------------------------------|
+| File                 | Description                                                                    |
+|----------------------+--------------------------------------------------------------------------------|
+| auto-reload.scm      | Watcher to automatically reload Sway when Guile files change.                  |
+| general.scm          | Inspired by Emacs =general= package; provides an easy interface for keybindings. |
+| kbd.scm              | Translates Emacs-like keybindings to be compatible with =Sway=.                  |
+| which-key.scm        | Inspired by Emacs =which-key= package; enhances keybinding discovery.            |
+| workspace-grid.scm   | Configures workspaces in a grid (see workflow below).                          |
+| workspace-groups.scm | Spans/synchronizes workspaces across monitors (see workflow below).            |
+|----------------------+--------------------------------------------------------------------------------|
+
 
 1- You can start your =swayipc= configurations from the =REPL=, =terminal=, or a =configuration file=.
 Remember: for debugging or displaying output, it's best to run Guile from the =REPL= or =terminal=. You can also pipe the output to a file if you desire.

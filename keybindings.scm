@@ -1,6 +1,7 @@
 (use-modules (modules kbd)
              (modules general)
              (swayipc info)
+             (swayipc records)
              (ice-9 popen)
              (srfi srfi-18)
              (ice-9 textual-ports))
@@ -9,11 +10,6 @@
   "execute given shell command"
   (format #t "running: ~a\n" command)
   (thread-start! (make-thread (lambda () (system command)))))
-
-(define (custom-sway-keybinding-translator key)
-  "Translates keybindings, passing kbd function will enable emacs
-   like key chords. The default implementation doesn't modify passed keybindings"
-  (kbd key))
 
 ;; get focused workspace from a list of workspaces
 (define* (focused-output-name #:optional (workspaces (sway-get-workspaces)))
@@ -26,7 +22,7 @@
 (define (keybindings-init)
   (kbd-init)
 
-  (general-configure #:keybinding-translator custom-sway-keybinding-translator)
+  (general-configure #:keybinding-translator kbd-translate)
   (general-init)
 
   ;; define root keybindings
@@ -61,16 +57,16 @@
    `("s-S-l" (sway-move-container SWAY-DIRECTION-RIGHT) #:wk "Move Container Right")
 
    ;; switch workspace
-   `("s-C-h" (switch-workspace-left) #:wk "Switch Workspace Left")
-   `("s-C-j" (switch-workspace-down) #:wk "Switch Workspace Down")
-   `("s-C-k" (switch-workspace-up) #:wk "Switch Workspace Up")
-   `("s-C-l" (switch-workspace-right) #:wk "Switch Workspace Right")
+   `("s-C-h" (workspace-grid-switch-workspace-left) #:wk "Switch Workspace Left")
+   `("s-C-j" (workspace-grid-switch-workspace-down) #:wk "Switch Workspace Down")
+   `("s-C-k" (workspace-grid-switch-workspace-up) #:wk "Switch Workspace Up")
+   `("s-C-l" (workspace-grid-switch-workspace-right) #:wk "Switch Workspace Right")
 
    ;; move container to workspace
-   `("s-M-C-h" (move-container-to-workspace-left) #:wk "Move Container to Workspace Left")
-   `("s-M-C-j" (move-container-to-workspace-down) #:wk "Move Container to Workspace Down")
-   `("s-M-C-k" (move-container-to-workspace-up) #:wk "Move Container to Workspace Up")
-   `("s-M-C-l" (move-container-to-workspace-right) #:wk "Move Container to Workspace Right")
+   `("s-M-C-h" (workspace-grid-move-container-to-workspace-left) #:wk "Move Container to Workspace Left")
+   `("s-M-C-j" (workspace-grid-move-container-to-workspace-down) #:wk "Move Container to Workspace Down")
+   `("s-M-C-k" (workspace-grid-move-container-to-workspace-up) #:wk "Move Container to Workspace Up")
+   `("s-M-C-l" (workspace-grid-move-container-to-workspace-right) #:wk "Move Container to Workspace Right")
 
    ;; Tab like cycling
    `("s-." (sway-focus-container-sibling SWAY-SIBLING-NEXT) #:wk "Cycle Tabs Next")
@@ -79,27 +75,27 @@
    `("s-w" (sway-kill) #:wk "Kill Window")
    `("s-Return" (exec "alacritty") #:wk "Spawn Terminal")
    `("M-s-Space" (exec "~/.bin/switch-keyboard-layout") #:wk "Switch Keyboard Layout")
-   `("C-s-Space" (exec "rofi -show drun")) #:wk "Application Launcher")
+   `("C-s-Space" (exec "sleep 0.05 && rofi -show drun")) #:wk "Application Launcher")
 
   ;; define leader keymap
   (general-define-keys
    #:prefix "s-Space" #:wk "Leader"
-   `("o" (exec "rofi -show drun") #:wk "Applications")
+   `("o" (exec "sleep 0.05 && rofi -show drun") #:wk "Applications")
    `("C-g" (sway-mode "default") #:wk "Abort")
 
    ;; rofi keymap
    `(general-define-keys
      #:prefix "r" #:wk "Rofi"
-     ("p" (exec "~/.config/rofi/bin/password-manager") #:wk "Password Manager")
-     ("m" (exec "rofi-mount") #:wk "Mount Drives")
-     ("u" (exec "rofi-unmount") #:wk "Unmount Drives")
-     ("w" (exec ".config/rofi/bin/wifi") #:wk "Wifi")
-     ("b" (exec "~/.config/rofi/bin/bluetooth") #:wk "Bluetooth")
-     ("f" (exec "~/.config/rofi/bin/finder") #:wk "Finder")
-     ("k" (exec "~/.config/rofi/bin/keyboard-layout") #:wk "Keyboard Layouts")
-     ("P" (exec "~/.config/rofi/bin/powermenu") #:wk "Power")
-     ("s" (exec "~/.config/rofi/bin/sound-input") #:wk "Sound Input")
-     ("S" (exec "~/.config/rofi/bin/sound-output") #:wk "Sound Output"))
+     ("p" (exec "sleep 0.05 && ~/.config/rofi/bin/password-manager") #:wk "Password Manager")
+     ("m" (exec "sleep 0.05 && rofi-mount") #:wk "Mount Drives")
+     ("u" (exec "sleep 0.05 && rofi-unmount") #:wk "Unmount Drives")
+     ("w" (exec "sleep 0.05 && .config/rofi/bin/wifi") #:wk "Wifi")
+     ("b" (exec "sleep 0.05 && ~/.config/rofi/bin/bluetooth") #:wk "Bluetooth")
+     ("f" (exec "sleep 0.05 && ~/.config/rofi/bin/finder") #:wk "Finder")
+     ("k" (exec "sleep 0.05 && ~/.config/rofi/bin/keyboard-layout") #:wk "Keyboard Layouts")
+     ("P" (exec "sleep 0.05 && ~/.config/rofi/bin/powermenu") #:wk "Power")
+     ("s" (exec "sleep 0.05 && ~/.config/rofi/bin/sound-input") #:wk "Sound Input")
+     ("S" (exec "sleep 0.05 && ~/.config/rofi/bin/sound-output") #:wk "Sound Output"))
 
    ;; screenshot keymap
    ;; flameshot is not performing well under wayland & multiple monitors

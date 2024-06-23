@@ -14,17 +14,17 @@
 
   #:export (workspace-groups-init
             workspace-groups-configure
-            OUTPUTS
-            GROUPS))
+            workspace-groups-outputs
+            workspace-groups-groups))
 
 ;; The order in which the outputs are organized, it's important that
 ;; the order of outputs match the order of workspaces in `WORKSPACE-GROUPS`
-(define OUTPUTS '())
+(define workspace-groups-outputs '())
 
 ;; The workspace groups, each is a list of workspace names
 ;; if a workspace of this list is activated, the rest of the workspaces
 ;; will be activated as well.
-(define GROUPS '())
+(define workspace-groups-groups '())
 
 (define* (workspace-groups-configure #:key outputs groups)
   "Configure workspace groups.
@@ -41,8 +41,8 @@ This means when ever the workspace \"dp-1-browsing\" is focused, the workspace
   #:outputs '(\"DP-1\" \"DP-2\")
   #:groups '((\"dp-1-browsing\" \"dp-2-browsing\")
              (\"dp-1-programming\" \"dp-2-programming\")))"
-  (when outputs (set! OUTPUTS outputs))
-  (when groups (set! GROUPS groups)))
+  (when outputs (set! workspace-groups-outputs outputs))
+  (when groups (set! workspace-groups-groups groups)))
 
 
 ;; keep track of last switched group, prevents switching to
@@ -74,7 +74,7 @@ Note: the last focused workspace is initiator. It will be the actually focused w
               (set! initiator-output output)
               (unless (is-workspace-focused workspace output)
                 (sway-switch-workspace workspace))))
-        group OUTPUTS)
+        group workspace-groups-outputs)
 
       ;; switch to initiator at last so the focus behaves as expected
       (sway-switch-workspace initiator))))
@@ -104,7 +104,7 @@ and focused all other workspaces in the group."
       (lambda (group)
         (when (member workspace group)
           (switch-to-workspace-group group workspace)))
-    GROUPS))))
+    workspace-groups-groups))))
 
 (define (pin-workspaces-to-output groups outputs)
   "Pin the groups provided to the outputs. This is called while initializing
@@ -124,5 +124,5 @@ Parameters:
 (define (workspace-groups-init)
   "Initialize the workspace groups."
   ;; pin workspaces to output
-  (pin-workspaces-to-output GROUPS OUTPUTS)
+  (pin-workspaces-to-output workspace-groups-groups workspace-groups-outputs)
   (add-hook! sway-workspace-hook workspace-changed))

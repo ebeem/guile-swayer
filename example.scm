@@ -45,5 +45,5 @@
 (sway-subscribe-all)
 
 (add-hook! sway-workspace-hook workspace-changed)
-(start-event-listener-thread)
-(thread-join! LISTENER-THREAD)
+(sway-start-event-listener-thread)
+(thread-join! SWAY-LISTENER-THREAD)

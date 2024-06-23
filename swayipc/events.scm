@@ -29,8 +29,8 @@
 
 (define (sway-subscribe-event event)
   "A client can subscribe to any events it wants to be notified of changes for."
-  (write-msg LISTENER-SOCKET SUBSCRIBE-MSG-ID event)
-  (json->sway-tick (list-ref (read-msg LISTENER-SOCKET) 1)))
+  (sway-write-msg SWAY-LISTENER-SOCKET SWAY-MSG-ID-SUBSCRIBE event)
+  (json->sway-tick (list-ref (sway-read-msg SWAY-LISTENER-SOCKET) 1)))
 
 (define (sway-subscribe-workspace-event)
   "Sent whenever an event involving a workspace occurs such as initialization
@@ -82,7 +82,7 @@
   (display "An error occurred while receiving event data\n")
   (format #t "~a\ncommand: ~a, payload ~a\n" exc command-id payload))
 
-(add-hook! data-received-hook
+(add-hook! sway-data-received-hook
            (lambda (command-id payload)
              (with-exception-handler
               (lambda (exc)
@@ -92,25 +92,25 @@
 
 (define (handle-event command-id payload)
   (cond
-   ((= command-id WORKSPACE-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-WORKSPACE)
     (run-hook sway-workspace-hook (json->sway-workspace-event payload)))
-   ((= command-id OUTPUT-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-OUTPUT)
     (run-hook sway-output-hook (json->sway-output-event payload)))
-   ((= command-id MODE-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-MODE)
     (run-hook sway-mode-hook (json->sway-mode-event payload)))
-   ((= command-id WINDOW-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-WINDOW)
     (run-hook sway-window-hook (json->sway-window-event payload)))
-   ((= command-id BAR-CONFIG-UPDATE-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-BAR-CONFIG-UPDATE)
     (run-hook sway-bar-config-hook (json->sway-bar-config payload)))
-   ((= command-id BINDING-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-BINDING)
     (run-hook sway-binding-hook (json->sway-binding-event payload)))
-   ((= command-id SHUTDOWN-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-SHUTDOWN)
     (run-hook sway-shutdown-hook (json->sway-shutdown-event payload)))
-   ((= command-id TICK-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-TICK)
     (run-hook sway-tick-hook (json->sway-tick-event payload)))
-   ((= command-id BAR-STATE-UPDATE-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-BAR-STATE-UPDATE)
     (run-hook sway-bar-state-update-hook (json->sway-bar-state-update-event payload)))
-   ((= command-id INPUT-EVENT-REPLY)
+   ((= command-id SWAY-EVENT-ID-INPUT)
     (run-hook sway-input-hook (json->sway-input-event payload)))))
 
 (define sway-workspace-hook

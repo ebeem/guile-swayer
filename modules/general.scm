@@ -211,10 +211,10 @@ For example:
                         (car arg)) (cdr arg))))))
        args))
 
-(define (custom-exception-handler exc command-id payload)
+(define (custom-exception-handler exc command)
   "Exception handler for evaluating expressions."
   (format #t "An error occurd while executing the received
-general command: command: ~a, payload: ~a\n" command-id payload)
+general command: command: ~a\n" command)
   (format #t "exception: ~a\n" exc))
 
 ;; FIXME: there must be some guile built-in function to

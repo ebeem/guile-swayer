@@ -279,14 +279,14 @@ Response:
    (lambda ()
       (begin
         ;; write the commands message
-        (write-msg COMMAND-SOCKET RUN-COMMMAND-MSG-ID (string-join commands " "))
+        (sway-write-msg SWAY-COMMAND-SOCKET SWAY-MSG-ID-RUN-COMMMAND (string-join commands " "))
         ;; read response from socket
         (map
          (lambda (res)
            (scm->sway-tick res))
          (vector->list
           (json-string->scm
-           (list-ref (read-msg COMMAND-SOCKET) 1))))))))
+           (list-ref (sway-read-msg SWAY-COMMAND-SOCKET) 1))))))))
 
 ;;        bar [<bar-id>] <bar-subcommands...>
 ;;            For details on bar subcommands, see sway-bar(5).

@@ -139,7 +139,7 @@ It's important to know where you clone the repo as you will have to reference it
 | examples   | Examples of configurations the you can refer to for inspiration |
 | modules    | Directory containing modules for extending Sway using =swayipc=.  |
 | sjson      | A patched version of =guile-json= (temporarily).                  |
-| swayipc    | Directory containing the core code for =swayipc.                |
+| swayipc    | Directory containing the core code for =swayipc=.                 |
 | README.org | This readme file                                                |
 |------------+-----------------------------------------------------------------|
 

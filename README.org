@@ -131,7 +131,7 @@ It's important to know where you clone the repo as you will have to reference it
 
 *** Project Structure
 
-****** Root Directory
+**** Root Directory
 
 |------------+-----------------------------------------------------------------|
 | File       | Description                                                     |
@@ -143,7 +143,7 @@ It's important to know where you clone the repo as you will have to reference it
 | README.org | This readme file                                                |
 |------------+-----------------------------------------------------------------|
 
-****** swayipc Directory
+**** swayipc Directory
 |------------+-----------------------------------------------------------------------------|
 | File       | Description                                                                 |
 |------------+-----------------------------------------------------------------------------|
@@ -154,7 +154,7 @@ It's important to know where you clone the repo as you will have to reference it
 | records    | Provides =Guile records= representing Sway's data structures.                 |
 |------------+-----------------------------------------------------------------------------|
 
-****** Modules Directory
+**** Modules Directory
 |----------------------+--------------------------------------------------------------------------------|
 | File                 | Description                                                                    |
 |----------------------+--------------------------------------------------------------------------------|

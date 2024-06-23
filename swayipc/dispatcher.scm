@@ -137,9 +137,8 @@
             SWAY-OUTPUT-DOWN
             SWAY-OUTPUT-LEFT
 
-            catch-all
-            dispatch-command
-            dispatch-commands
+            sway-dispatch-command
+            sway-dispatch-commands
             sway-default-orientation
             sway-include
             sway-swaybg-command
@@ -242,8 +241,7 @@
             sway-switch-workspace-on-output
             sway-workspace-auto-back-and-forth
             sway-workspace-gaps
-            sway-criteria
-            custom-exception-handler))
+            sway-criteria))
 
 (define (custom-exception-handler exc)
   (display "An error occurred while dispatching the command\n"))
@@ -257,16 +255,16 @@
     thunk
     #:unwind? #t))
 
-(define (dispatch-command command)
+(define (sway-dispatch-command command)
   "Parses and runs the payload as sway command.
 Parameters:
 	- a sway command
 Response:
     An  array of objects corresponding to each command that was parsed. Each
     object has the property success."
-  (dispatch-commands command))
+  (sway-dispatch-commands command))
 
-(define (dispatch-commands . commands)
+(define (sway-dispatch-commands . commands)
   "Parses and runs the payload as sway commands
 Parameters:
 	- list of sway commands
@@ -299,28 +297,28 @@ Response:
   "Sets the default container layout for tiled containers.
   parameters:
     - orientation: `SWAY-ORIENTATION-HORIZONTAL`, `SWAY-ORIENTATION-VERTICAL`, `SWAY-ORIENTATION-AUTO`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "default_orientation " orientation)))
 
 (define (sway-include file-path)
   "Includes another configuration file from path (not scheme file).
   parameters:
     - file-path: string"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "include " file-path)))
 
 (define (sway-swaybg-command command)
   "Executes custom background command.  Default  is  swaybg.
   parameters:
     - command: string"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "swaybg_command " command)))
 
 (define (sway-swaynag-command command)
   "Executes custom command for swaynag. Default is swaynag.
   parameters:
     - command: string"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "swaynag_command " command)))
 
 (define SWAY-LAYOUT-DEFAULT "default")
@@ -331,7 +329,7 @@ Response:
   "Specifies the initial layout for new containers in  an  empty  workspace.
   parameters:
     - layout: `SWAY-LAYOUT-DEFAULT`, `SWAY-LAYOUT-STAKCING`, `SWAY-LAYOUT-TABBED`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "workspace_layout " layout)))
 
 (define SWAY-XWAYLAND-ENABLE "enable")
@@ -342,7 +340,7 @@ Response:
   "Enables or disables Xwayland support, which allows X11 applications to be used.
   parameters:
     - option: `SWAY-XWAYLAND-ENABLE`, `SWAY-XWAYLAND-DISABLE`, `SWAY-XWAYLAND-FORCE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "xwayland " (cond
                                ((equal? #t option) SWAY-XWAYLAND-ENABLE)
                                ((equal? #f option) SWAY-XWAYLAND-DISABLE)
@@ -358,17 +356,17 @@ Response:
   parameters:
     - option: `SWAY-BORDER-NONE`, `SWAY-BORDER-NORMAL`, `SWAY-BORDER-CSD`, `SWAY-BORDER-PIXEL`
 	- thickness: int"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "border " option (number->string thickness))))
 
 (define (sway-border-toggle)
   "Cycles through the available border styles."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "border toggle")))
 
 (define (sway-exit)
   "Exit sway and end your Wayland session."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "exit")))
 
 (define SWAY-FLOATING-ENABLED "enabled")
@@ -379,7 +377,7 @@ Response:
   "Make focused view floating, non-floating, or the opposite of what it is now.
   parameters:
     - layout: `SWAY-FLOATING-ENABLED`, `SWAY-FLOATING-DISABLED`, `SWAY-FLOATING-TOGGLE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "floating " (cond
                                ((equal? #t option) SWAY-FLOATING-ENABLED)
                                ((equal? #f option) SWAY-FLOATING-DISABLED)
@@ -389,7 +387,7 @@ Response:
   "Moves focus to the container that matches the specified criteria.
   parameters:
     - criteria: sway criteria"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append criteria " focus")))
 
 (define SWAY-DIRECTION-UP "up")
@@ -405,48 +403,48 @@ Response:
   "Moves focus to the next container in the specified direction.
   parameters:
     - direction: `SWAY-DIRECTION-UP`, `SWAY-DIRECTION-RIGHT`, `SWAY-DIRECTION-DOWN`, `SWAY-DIRECTION-LEFT`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus " direction)))
 
 (define (sway-focus-container-sibling sibling)
   "Moves focus to the previous or next container in the current layout.
   parameters:
     - sibling: `SWAY-SIBLING-NEXT`, `SWAY-SIBLING-PREV`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus " sibling)))
 
 (define (sway-focus-container-child)
   "Moves focus to the last-focused child of the focused container."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus child")))
 
 (define (sway-focus-container-parent)
   "Moves focus to the last-focused child of the focused container."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus parent")))
 
 (define (sway-focus-output-direction direction)
   "Moves focus to the next output in the specified direction.
   parameters:
     - direction: `SWAY-DIRECTION-UP`, `SWAY-DIRECTION-RIGHT`, `SWAY-DIRECTION-DOWN`, `SWAY-DIRECTION-LEFT`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus output " direction)))
 
 (define (sway-focus-output-name name)
   "Moves focus to the named output.
   parameters:
     - name: string, output name"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus output " name)))
 
 (define (sway-focus-container-tiling)
   "Sets focus to the last focused tiling container."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus tiling")))
 
 (define (sway-focus-container-floating)
   "Sets focus to the last focused floating container."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus floating")))
 
 (define SWAY-FULLSCREEN-ENABLED "enabled")
@@ -458,7 +456,7 @@ Response:
   parameters:
     - option: `SWAY-FULLSCREEN-ENABLED`, `SWAY-FULLSCREEN-DISABLED`, `SWAY-FULLSCREEN-TOGGLE`
     - global: #t, #f"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "fullscreen " (cond
                                  ((equal? #t option) SWAY-FULLSCREEN-ENABLED)
                                  ((equal? #f option) SWAY-FULLSCREEN-DISABLED)
@@ -490,7 +488,7 @@ Response:
     - workspace: `SWAY-GAPS-WORKSPACE-ALL`, `SWAY-GAPS-WORKSPACE-CURRENT`, `SWAY-GAPS-WORKSPACE-SET`,
                  `SWAY-GAPS-WORKSPACE-PLUS`, `SWAY-GAPS-WORKSPACE-MINUS`, `SWAY-GAPS-WORKSPACE-TOGGLE`
     - amount: amount of gap (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "gaps " option " " workspace " " (number->string amount))))
 
 (define SWAY-INHIBIT-IDLE-FOCUS "focus")
@@ -504,7 +502,7 @@ Response:
   parameters:
     - option: `SWAY-INHIBIT-IDLE-FOCUS`, `SWAY-INHIBIT-IDLE-FULLSCREEN`, `SWAY-INHIBIT-IDLE-OPEN`,
               `SWAY-INHIBIT-IDLE-NONE`, `SWAY-INHIBIT-IDLE-VISIBLE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "inhibit_idle " option)))
 
 (define SWAY-LAYOUT-SPLITH "splith")
@@ -516,7 +514,7 @@ Response:
   parameters:
     - option: `SWAY-LAYOUT-DEFAULT`, `SWAY-LAYOUT-SPLITH`, `SWAY-LAYOUT-SPLITV`,
               `SWAY-LAYOUT-STACKING`, `SWAY-LAYOUT-TABBED`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "layout " option)))
 
 (define SWAY-LAYOUT-TOGGLE-ALL "all")
@@ -526,7 +524,7 @@ Response:
   "Cycles the layout mode of the focused container though a preset list of layouts.
   parameters:
     - option: `SWAY-LAYOUT-TOGGLE-ALL`, `SWAY-LAYOUT-TOGGLE-SPLIT`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "layout toggle" (if option (string-append " " option) ""))))
 
 (define* (sway-move-container direction #:key amount)
@@ -534,7 +532,7 @@ Response:
   parameters:
     - direction: `SWAY-DIRECTION-UP`, `SWAY-DIRECTION-RIGHT`, `SWAY-DIRECTION-DOWN`, `SWAY-DIRECTION-LEFT`
     - amount: int"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move " direction
                   (if amount (string-append " " (number->string amount)) ""))))
 
@@ -543,22 +541,22 @@ Response:
   parameters:
     - x: int
     - y: int"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move absolute position " (number->string x) " " (number->string y))))
 
 (define (sway-move-container-absolute-center)
   "Moves the focused container to be centered on the workspace."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move absolute position center")))
 
 (define (sway-move-container-cursor)
   "Moves the focused container to be centered on the cursor."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move position cursor")))
 
 (define (sway-move-container-to-mark mark)
   "Moves the focused container to the specified mark."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move container to mark " mark)))
 
 (define SWAY-WORKSPACE-PREVIOUS "prev")
@@ -573,7 +571,7 @@ Response:
   parameters:
     - workspace: workspace name, `SWAY-WORKSPACE-PREVIOUS`, `SWAY-WORKSPACE-NEXT`, `SWAY-WORKSPACE-CURRENT`,
                  `SWAY-WORKSPACE-PREVIOUS-ON-OUTPUT`, `SWAY-WORKSPACE-NEXT-ON-OUTPUT`, `SWAY-WORKSPACE-BACK-AND-FORTH`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move container to workspace \"" workspace "\"")))
 
 (define SWAY-OUTPUT-CURRENT "current")
@@ -587,14 +585,14 @@ Response:
   parameters:
     - workspace: output name, output id, `SWAY-OUTPUT-CURRENT`, `SWAY-OUTPUT-UP`,
                  `SWAY-OUTPUT-RIGHT`, `SWAY-OUTPUT-DOWN`, `SWAY-OUTPUT-LEFT`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move container to output " (or (and (number? output)
                                                           (number->string output))
                                                      output))))
 
 (define (sway-move-container-to-scratchpad)
   "Moves the focused container to the scratchpad."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move container to scratchpad")))
 
 (define (sway-move-workspace-to-output output)
@@ -602,7 +600,7 @@ Response:
   parameters:
     - workspace: output name, output id, `SWAY-OUTPUT-CURRENT`, `SWAY-OUTPUT-UP`,
                  `SWAY-OUTPUT-RIGHT`, `SWAY-OUTPUT-DOWN`, `SWAY-OUTPUT-LEFT`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "move workspace to output " (or (and (number? output)
                                                           (number->string output))
                                                      output))))
@@ -611,12 +609,12 @@ Response:
   "A no operation command that can be used to override default behaviour.
   parameters:
     - comment: optional comment argument is ignored, but logged for debugging purposes."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "nop " comment)))
 
 (define (sway-reload)
   "Reloads the sway config file and applies any changes."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "reload")))
 
 (define (sway-rename-workspace old-name new-name)
@@ -624,14 +622,14 @@ Response:
   parameters:
     - old-name: old workspace name (str).
     - new-name: new workspace name (str)."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "rename workspace " old-name " to " new-name)))
 
 (define (sway-rename-current-workspace new-name)
   "Rename current workspace to the <new_name>
   parameters:
     - new-name: new workspace name (str)."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "rename workspace to " new-name)))
 
 (define SWAY-RESIZE-TYPE-SHRINK "shrink")
@@ -648,31 +646,31 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - type: `SWAY-RESIZE-TYPE-SHRINK`, `SWAY-RESIZE-TYPE-GROW-WIDTH`, `SWAY-RESIZE-TYPE-GROW-HEIGHT`
     - amount: number
     - unit: `SWAY-SIZE-UNIT-PX`, `SWAY-SIZE-UNIT-PPT`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "resize " type " "
                   (number->string amount)
                   (if unit (string-append " " unit) ""))))
 
 (define* (sway-resize-height amount #:key unit)
  "Sets the height of the container to height, specified in pixels or percentage points."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "resize height " (number->string amount)
                   (if unit (string-append " " unit) ""))))
 
 (define* (sway-resize-width amount #:key unit)
  "Sets the width of the container to width, specified in pixels or percentage points."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "resize width " (number->string amount)
                   (if unit (string-append " " unit) ""))))
 
 (define (sway-show-scratchpad)
  "Shows a window from the scratchpad."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "scratchpad show")))
 
 (define (sway-shortcuts-inhibitor flag)
  "Enables or disables the ability of clients to inhibit keyboard shortcuts for a view."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "scratchpad " (if flag "enabled" "disabled"))))
 
 (define SWAY-SPLIT-VERTICAL "vertical")
@@ -685,7 +683,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
    the effect of a previous split is undone.
   parameters:
     - option: `SWAY-SPLIT-VERTICAL`, `SWAY-SPLIT-HORIZONTAL`, `SWAY-SPLIT-NONE`, `SWAY-SPLIT-TOGGLE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "split " option)))
 
 (define SWAY-STICKY-ENABLE "enable")
@@ -696,7 +694,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "Sticks a floating window to the current output so that it shows up on all workspaces.
   parameters:
     - flag: `SWAY-STICKY-ENABLE`, `SWAY-STICKY-DISABLE`, `SWAY-STICKY-TOGGLE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "sticky " (cond
                                ((equal? #t flag) SWAY-STICKY-ENABLE)
                                ((equal? #f flag) SWAY-STICKY-DISABLE)
@@ -713,7 +711,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - type: `SWAY-SWAY-CONTAINER-TYPE-ID`, `SWAY-SWAY-CONTAINER-TYPE-CONTAINER-ID`,
 			`SWAY-SWAY-CONTAINER-TYPE-MARK`
     - arg: argument passed (based on selected type)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "swap container with " type " "
                   (if (number? arg)
                       (number->string arg)
@@ -729,7 +727,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
         %instance  -  The X11 instance (applicable to xwayland windows only)
         %shell - The protocol the window is  using  (typically xwayland or xdg_shell)"
 
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "title_format " format)))
 
 (define (sway-assign-to-workspace criteria workspace)
@@ -737,7 +735,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one
     - workspace: workspace name"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "assign " criteria " workspace " (or (and (number? workspace)
                                                           (number->string workspace))
                                                      workspace))))
@@ -747,7 +745,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one
     - output: output name"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "assign " criteria " output " output)))
 
 (define* (sway-bindsym key command #:key whole-window border exclude-titlebar
@@ -769,7 +767,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - no-repeat: the command will not be run repeatedly when the key is held
     - inhibited: keyboard shortcuts run also when inhibitor is active for the currently focused window.
     - group: binding will only be available for specified group."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "bindsym "
                   (string-join
                    (filter (lambda (x) (> (string-length x) 0))
@@ -806,7 +804,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - no-repeat: the command will not be run repeatedly when the key is held
     - inhibited: keyboard shortcuts run also when inhibitor is active for the currently focused window.
     - group: binding will only be available for specified group."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "bindcode "
                   (string-join
                    (filter (lambda (x) (> (string-length x) 0))
@@ -834,7 +832,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - locked: run command also when screen locking program is active
     - no-warn: silence sway warning when overriding a keybinding
     - reload: the binding should also be executed when the config is reloaded."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "bindswitch "
                   (string-join
                    (filter (lambda (x) (> (string-length x) 0))
@@ -903,7 +901,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - switch: Supported switches are lid (laptop lid) and tablet (tablet mode) switches.
     - state: valid values are on, off and toggle."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "unbindswitch " switch ":" state)))
 
 ;; TODO
@@ -925,7 +923,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - to-code: the keysyms will be translated into the corresponding keycodes
                this will make them layout independant
     - input-device: the binding will only be executed for specified input device"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "unbindsym "
                   (string-join
                    (filter (lambda (x) (> (string-length x) 0))
@@ -952,7 +950,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - release: command is executed when the key combo is released.
     - locked: run command also when screen locking program is active
     - input-device: the binding will only be executed for specified input device"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "unbindcode "
                   (string-join
                    (filter (lambda (x) (> (string-length x) 0))
@@ -971,7 +969,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "remove identifier from the list of current marks on a window.
   Parameters:
    - mark: string mark."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "unmark " identifier)))
 
 (define SWAY-URGENT-ENABLE "enable")
@@ -984,7 +982,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   Parameters:
    - flag: `SWAY-URGENT-ENABLE`, `SWAY-URGENT-DISABLE`,
            `SWAY-URGENT-ALLOW`, `SWAY-URGENT-DENY`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "urgent " flag)))
 
 ;; The meaning of each color is:
@@ -997,7 +995,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "This command is ignored and is only present for i3 compatibility.
   parameters:
     - color: color code to be used (str)"
-  (dispatch-command
+  (sway-dispatch-command
     (string-append "client.background " color)))
 
 (define* (sway-client-focused-color border-color background-color text-color
@@ -1009,7 +1007,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "client.focused " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
@@ -1024,7 +1022,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "client.focused_inactive " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
@@ -1038,7 +1036,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "client.focused_tab_title " border-color " " background-color " " text-color)))
 
 (define* (sway-client-placeholder-color border-color background-color text-color
@@ -1050,7 +1048,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "client.placeholder " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
@@ -1065,7 +1063,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "client.unfocused " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
@@ -1080,7 +1078,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "client.urgent " border-color " " background-color " " text-color
                   (if indictor-color (string-append " " indictor-color) "")
                   (if child-border-color (string-append " " child-border-color) ""))))
@@ -1094,7 +1092,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - type: color code to be used for border (str)
     - n: units in case pixel is chosen (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "default_border " type " " (if n (number->string n) ""))))
 
 (define* (sway-default-floating-border-style type #:key n)
@@ -1102,21 +1100,21 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - type: color code to be used for border (str)
     - n: units in case pixel is chosen (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "default_floating_border " type " " (if n (number->string n) ""))))
 
 (define (sway-exec command)
   "Executes shell command with sh.
   parameters:
     - command: command to be executed (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "exec " command)))
 
 (define (sway-exec-always command)
   "Like exec, but the shell command will be executed again after reload.
   parameters:
     - command: command to be executed (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "exec_always " command)))
 
 (define (sway-floating-maximum-size width height)
@@ -1124,7 +1122,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - width: target size width (number)
     - height: target size height (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "floating_maximum_size "
                   (number->string width) " x "
                   (number->string height))))
@@ -1134,7 +1132,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - width: target size width (number)
     - height: target size height (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "floating_minimum_size "
                   (number->string width) " x "
                   (number->string height))))
@@ -1148,7 +1146,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - modifier: the modifier key (str)
     - type: `SWAY-FLOATING-MODIFIER-TYPE-NORMAL`, `SWAY-FLOATING-MODIFIER-TYPE-INVERSE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "floating_modifier" modifier " x " type)))
 
 (define SWAY-FOCUS-FOLLOW-MOUSE-FLAG-YES "yes")
@@ -1162,7 +1160,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - flag: `SWAY-FOCUS-FOLLOW-MOUSE-FLAG-YES`, `SWAY-FOCUS-FOLLOW-MOUSE-FLAG-NO`,
 			`SWAY-FOCUS-FOLLOW-MOUSE-FLAG-ALWAYS`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus_follows_mouse " flag)))
 
 (define SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-SMART "smart")
@@ -1175,7 +1173,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - flag: `SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-SMART`, `SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-URGENT`,
 			`SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-FOCUS`, `SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-NONE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus_on_window_activation " flag)))
 
 (define SWAY-FOCUS-WRAPPING-FLAG-YES "yes")
@@ -1188,7 +1186,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - flag: `SWAY-FOCUS-WRAPPING-FLAG-YES`, `SWAY-FOCUS-WRAPPING-FLAG-NO`,
 			`SWAY-FOCUS-WRAPPING-FLAG-FORCE`, `SWAY-FOCUS-WRAPPING-FLAG-WORKSPACE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "focus_wrapping " flag)))
 
 (define* (sway-font font #:key pango)
@@ -1197,21 +1195,21 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - font: font name (str)
     - pango: whether to use pango or not (boolean)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "font " (if pango "pango:" "") font)))
 
 (define (sway-force-display-urgency-hint timeout)
   "If an application on another workspace sets an urgency hint.
   parameters:
     - timeout: urgency timeout (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "force_display_urgency_hint " (number->string timeout))))
 
 (define (sway-titlebar-border-thickness thickness)
   "Thickness of the titlebar border in pixels.
   parameters:
     - thickness: thickness of border (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "titlebar_border_thickness " (number->string thickness))))
 
 (define (sway-titlebar-padding horizontal vertical)
@@ -1219,7 +1217,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - horizontal: horizontal padding (number)
     - vertical: vertical padding (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "titlebar_padding " (number->string horizontal)
                   " " (number->string vertical))))
 
@@ -1229,7 +1227,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one
     - command: list of commands to execute (string)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "for_window " criteria " " commands)))
 
 (define (sway-default-gaps option amount)
@@ -1239,7 +1237,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
               `SWAY-GAPS-OPTION-VERTICAL`, `SWAY-GAPS-OPTION-TOP`, `SWAY-GAPS-OPTION-RIGHT`,
               `SWAY-GAPS-OPTION-BOTTOM`, `SWAY-GAPS-OPTION-LEFT`
     - amount: amount of gap (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "gaps " option " " (number->string amount))))
 
 (define SWAY-EDGE-BORDER-TYPE-NONE "none")
@@ -1255,7 +1253,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - type: `SWAY-EDGE-BORDER-TYPE-NONE`, `SWAY-EDGE-BORDER-TYPE-VERTICAL`, `SWAY-EDGE-BORDER-TYPE-HORIZONTAL`,
               `SWAY-EDGE-BORDER-TYPE-BOTH`, `SWAY-EDGE-BORDER-TYPE-SMART`, `SWAY-EDGE-BORDER-TYPE-SMART-NO-GAPS`
     - i3: enables i3-compatible behavior to hide the title bar on tabbed and stacked containers with one child"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "hide_edge_borders " (if i3 "--i3 " "") type)))
 
 (define (sway-input device subcommands)
@@ -1263,7 +1261,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - device: the name of the target device
     - subcommands: list of commands to execute (string)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "input " device " " subcommands)))
 
 (define (sway-seat seat subcommands)
@@ -1271,12 +1269,12 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - seat: the name of the seat device
     - subcommands: list of commands to execute (string)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "seat " seat " " subcommands)))
 
 (define (sway-kill)
   "Kills (closes) the currently focused container and all of its children."
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "kill")))
 
 (define SWAY-SMART-BORDERS-ON "on")
@@ -1288,7 +1286,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
    workspace has more than one visible child.
   parameters:
     - flag: `SWAY-SMART-BORDERS-ON`, `SWAY-SMART-BORDERS-OFF`, `SWAY-SMART-BORDERS-NO-GAPS`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "smart_borders " (cond
                    ((equal? flag #t) SWAY-SMART-BORDERS-ON)
                    ((equal? flag #f) SWAY-SMART-BORDERS-OFF)
@@ -1305,7 +1303,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - flag: `SWAY-SMART-GAPS-ON`, `SWAY-SMART-GAPS-OFF`,
 			`SWAY-SMART-GAPS-TOGGLE`, `SWAY-SMART-GAPS-INVERSE-OUTER`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "smart_gaps " (cond
                    ((equal? flag #t) SWAY-SMART-GAPS-ON)
                    ((equal? flag #f) SWAY-SMART-GAPS-OFF)
@@ -1324,7 +1322,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "Switches to the specified mode. The default mode is default.
   parameters:
     - mode: name of the mode (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "mode \"" mode "\"")))
 
 (define (sway-mode-subcommand mode subcommand)
@@ -1332,7 +1330,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - mode: name of the mode (str)
     - subcommand: list of subcommands (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "mode \"" mode "\" " subcommand)))
 
 (define SWAY-MOUSE-WARPING-OUTPUT "output")
@@ -1344,14 +1342,14 @@ If the units are omitted, floating containers are resized in px and tiled contai
    If container is specified, the mouse will be moved to the middle of the container on switch.
   parameters:
     - mode: `SWAY-MOUSE-WARPING-OUTPUT`, `SWAY-MOUSE-WARPING-CONTAINER`, `SWAY-MOUSE-WARPING-NONE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "mouse_warping " mode)))
 
 (define (sway-no-focus criteria)
   "Prevents windows matching <criteria> from being focused automatically when they're created.
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "no_focus " criteria)))
 
 (define (sway-output output subcommands)
@@ -1359,7 +1357,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - output: name of the output (str)
     - subcommand: list of subcommands (str)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "output " output " " subcommands)))
 
 (define SWAY-POPUP-TYPE-OUTPUTSMART "outputsmart")
@@ -1370,7 +1368,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "Determines what to do when a fullscreen view opens a dialog.
   parameters:
     - type: `SWAY-POPUP-TYPE-OUTPUTSMART`, `SWAY-POPUP-TYPE-IGNORE`, `SWAY-POPUP-TYPE-LEAVE-FULLSCREEN`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "popup_during_fullscreen " type)))
 
 (define SWAY-PRIMARY-SELECTION-ENABLED "enabled")
@@ -1380,7 +1378,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "Enable or disable the primary selection clipboard. May only be configured at launch. Default is enabled.
   parameters:
     - type: `SWAY-PRIMARY-SELECTION-ENABLED`, `SWAY-PRIMARY-SELECTION-DISABLED`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "primary_selection " (cond
                    ((equal? type #t) SWAY-PRIMARY-SELECTION-ENABLED)
                    ((equal? type #f) SWAY-PRIMARY-SELECTION-DISABLED)
@@ -1393,7 +1391,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "If show_marks is yes, marks will be displayed in the window borders.
   parameters:
     - flag: `SWAY-SHOW-MARKS-YES`, `SWAY-SHOW-MARKS-NO`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "show_marks " (cond
                    ((equal? flag #t) SWAY-SHOW-MARKS-YES)
                    ((equal? flag #f) SWAY-SHOW-MARKS-NO)
@@ -1408,7 +1406,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
     - type: `SWAY-OPACITY-SET`, `SWAY-OPACITY-PLUS`, `SWAY-OPACITY-MINUS`
 	- value: opacity value (number) should be between 0 and 1"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "opacity " type " " (number->string value))))
 
 (define SWAY-TILING-DRAG-ENABLE "enable")
@@ -1419,7 +1417,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "Sets whether or not tiling containers can be dragged with the mouse.
   parameters:
     - flag: `SWAY-TILING-DRAG-ENABLE`, `SWAY-TILING-DRAG-DISABLE`, `SWAY-TILING-DRAG-TOGGLE`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "tiling_drag " (cond
                    ((equal? flag #t) SWAY-TILING-DRAG-ENABLE)
                    ((equal? flag #f) SWAY-TILING-DRAG-DISABLE)
@@ -1429,7 +1427,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "Sets whether or not tiling containers can be dragged with the mouse.
   parameters:
     - threshold: threshold value (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "tiling_drag_threshold " (number->string threshold))))
 
 (define SWAY-TILING-ALIGN-LEFT "left")
@@ -1440,7 +1438,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "Sets the title alignment.
   parameters:
     - type: `SWAY-TILING-ALIGN-LEFT`, `SWAY-TILING-ALIGN-CENTER`, `SWAY-TILING-ALIGN-RIGHT`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "title_align " type)))
 
 (define* (sway-switch-workspace-id id #:key auto-back-and-forth)
@@ -1448,7 +1446,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
 	- id: workspace id (number)
     - auto-back-and-forth: enable/disable auto back and forth"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "workspace number "
                   (unless auto-back-and-forth "--no-auto-back-and-forth ")
                   (number->string id))))
@@ -1458,7 +1456,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
 	- workspace: workspace name (str)
     - auto-back-and-forth: enable/disable auto back and forth"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "workspace "
                   (unless auto-back-and-forth "--no-auto-back-and-forth ")
                   workspace)))
@@ -1468,7 +1466,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   parameters:
 	- workspace: workspace name (str)
     - output: output name"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "workspace " workspace " output " output)))
 
 (define SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES "yes")
@@ -1478,7 +1476,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
   "When yes, repeating a workspace switch command will switch back to the prior workspace.
   parameters:
 	- option: `SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES`, `SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-NO`"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "workspace_auto_back_and_forth "
                   (cond
                    ((equal? option #t) SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES)
@@ -1495,7 +1493,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
               `SWAY-GAPS-OPTION-VERTICAL`, `SWAY-GAPS-OPTION-TOP`, `SWAY-GAPS-OPTION-RIGHT`,
               `SWAY-GAPS-OPTION-BOTTOM`, `SWAY-GAPS-OPTION-LEFT`
 	- amount: the amount of gap (number)"
-  (dispatch-command
+  (sway-dispatch-command
    (string-append "workspace " workspace option (number->string amount))))
 
 (define* (sway-criteria #:key app-id class con-id con-mark

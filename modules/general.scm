@@ -130,7 +130,7 @@ Parameters:
 
     (hash-set! general-keybindings chord (list key exp wk submap))
     (if (equal? submap "default")
-      (dispatch-command command)
+      (sway-dispatch-command command)
       (begin
         (sway-mode-subcommand submap command)
         (unless (equal? "sway-mode" (symbol->string (car exp)))

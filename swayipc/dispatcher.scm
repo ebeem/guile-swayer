@@ -9,7 +9,7 @@
             SWAY-ORIENTATION-VERTICAL
             SWAY-ORIENTATION-AUTO
             SWAY-LAYOUT-DEFAULT
-            SWAY-LAYOUT-STAKCING
+            SWAY-LAYOUT-STACKING
             SWAY-LAYOUT-TABBED
             SWAY-XWAYLAND-ENABLE
             SWAY-XWAYLAND-DISABLE
@@ -122,7 +122,6 @@
             SWAY-INHIBIT-IDLE-VISIBLE
             SWAY-LAYOUT-SPLITH
             SWAY-LAYOUT-SPLITV
-            SWAY-LAYOUT-STACKING
             SWAY-LAYOUT-TOGGLE-ALL
             SWAY-LAYOUT-TOGGLE-SPLIT
             SWAY-WORKSPACE-PREVIOUS
@@ -322,13 +321,13 @@ Response:
    (string-append "swaynag_command " command)))
 
 (define SWAY-LAYOUT-DEFAULT "default")
-(define SWAY-LAYOUT-STAKCING "vertical")
+(define SWAY-LAYOUT-STACKING "stacking")
 (define SWAY-LAYOUT-TABBED "tabbed")
 
 (define (sway-workspace-layout layout)
   "Specifies the initial layout for new containers in  an  empty  workspace.
   parameters:
-    - layout: `SWAY-LAYOUT-DEFAULT`, `SWAY-LAYOUT-STAKCING`, `SWAY-LAYOUT-TABBED`"
+    - layout: `SWAY-LAYOUT-DEFAULT`, `SWAY-LAYOUT-STACKING`, `SWAY-LAYOUT-TABBED`"
   (sway-dispatch-command
    (string-append "workspace_layout " layout)))
 
@@ -419,7 +418,7 @@ Response:
    (string-append "focus child")))
 
 (define (sway-focus-container-parent)
-  "Moves focus to the last-focused child of the focused container."
+  "Moves focus to the last-focused parent of the focused container."
   (sway-dispatch-command
    (string-append "focus parent")))
 
@@ -1090,7 +1089,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
 (define* (sway-default-border-style type #:key n)
   "Set default border style for new tiled windows.
   parameters:
-    - type: color code to be used for border (str)
+    - type: `SWAY-BORDER-STYLE-NONE`, `SWAY-BORDER-STYLE-NORMAL`, `SWAY-BORDER-STYLE-PIXEL`
     - n: units in case pixel is chosen (number)"
   (sway-dispatch-command
    (string-append "default_border " type " " (if n (number->string n) ""))))

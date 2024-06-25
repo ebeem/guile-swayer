@@ -2,7 +2,7 @@
   #:use-module (swayipc connection)
   #:use-module (swayipc records)
   #:use-module (oop goops)
-  #:use-module (sjson parser)
+  #:use-module (sjson)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-1)
 

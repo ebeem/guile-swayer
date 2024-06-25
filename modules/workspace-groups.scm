@@ -7,10 +7,7 @@
 ;; (workspace-groups-init)
 
 (define-module (modules workspace-groups)
-  #:use-module (swayipc records)
-  #:use-module (swayipc info)
-  #:use-module (swayipc dispatcher)
-  #:use-module (swayipc events)
+  #:use-module (swayipc)
 
   #:export (workspace-groups-init
             workspace-groups-configure

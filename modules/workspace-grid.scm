@@ -7,10 +7,7 @@
 ;; (workspace-grid-init)
 
 (define-module (modules workspace-grid)
-  #:use-module (swayipc records)
-  #:use-module (swayipc info)
-  #:use-module (swayipc dispatcher)
-  #:use-module (swayipc events)
+  #:use-module (swayipc)
 
   #:export (workspace-grid-workspaces
             workspace-grid-columns

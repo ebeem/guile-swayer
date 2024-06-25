@@ -12,7 +12,7 @@
 ;; (auto-reload-init)
 
 (define-module (modules auto-reload)
-  #:use-module (swayipc dispatcher)
+  #:use-module (swayipc)
   #:use-module (system foreign)
   #:use-module (system foreign-library)
   #:use-module (srfi srfi-1)

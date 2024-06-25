@@ -24,11 +24,7 @@
              (modules workspace-grid)
              (modules auto-reload)
              (modules which-key)
-             (swayipc connection)
-             (swayipc records)
-             (swayipc info)
-             (swayipc events)
-             (swayipc dispatcher))
+             (swayipc))
 
 ;; load look and feel
 (load "behavior.scm")

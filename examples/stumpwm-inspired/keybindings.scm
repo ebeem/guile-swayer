@@ -1,7 +1,6 @@
 (use-modules (modules kbd)
              (modules general)
-             (swayipc info)
-             (swayipc records)
+             (swayipc)
              (ice-9 popen)
              (srfi srfi-18)
              (ice-9 textual-ports))

@@ -1,9 +1,9 @@
 ;; use example:
 
-;; (workspace-grid-configure #:rows 2 #:columns
-;;                           '(("ws-o1-1" "ws-o1-2" "ws-o1-3" "ws-o1-3")
-;;                             ("ws-o2-1" "ws-o2-2" "ws-o2-3" "ws-o2-3")
-;;                             ("ws-o3-1" "ws-o3-2" "ws-o3-3" "ws-o3-3")))
+;; (workspace-grid-configure #:rows 2 #:columns 2 #:workspaces
+;;                           '(("ws-o1-1" "ws-o1-2" "ws-o1-3" "ws-o1-4")
+;;                             ("ws-o2-1" "ws-o2-2" "ws-o2-3" "ws-o2-4")
+;;                             ("ws-o3-1" "ws-o3-2" "ws-o3-3" "ws-o3-4")))
 ;; (workspace-grid-init)
 
 (define-module (modules workspace-grid)

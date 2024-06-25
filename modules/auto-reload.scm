@@ -1,5 +1,13 @@
-;; use example:
-;; NOTE: use full path for your home, don't use tilde (~)
+;; The auto-reload module is designed to automatically reload Sway
+;; configuration when changes are detected in specified directories.
+;; This module leverages the Sway IPC protocol for reloading and uses
+;; inotify for monitoring file system events. The key functions are:
+;;     auto-reload-configure: Configures the directories to watch for changes.
+;;     auto-reload-init: Initiates the monitoring of the specified directories
+;; 						 and reloads the Sway configuration upon detecting changes.
+
+;; Here's an example of how to use this module:
+;; NOTE: use the full path for your home, don't use tilde (~)
 ;; (auto-reload-configure #:directories '("/home/ebeem/.config/sway/"))
 ;; (auto-reload-init)
 

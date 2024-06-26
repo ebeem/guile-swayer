@@ -250,3 +250,19 @@ Example of navigation into a workspace (same behavior regardless of the method u
 You can partially configure workspace groups to span or sync only some workspaces. This allows you to have workspaces that do not span and others that do, with the ability to pin specific workspaces to their monitors when focused.
 
 Note: this behavior is achieved  via =modules/workspace-groups.scm= 
+
+*** Submaps and Which Key
+
+** which-key
+
+=which-key= is a =guile-swayer= module that displays available key bindings in a pop-up window as you start typing a key sequence. This immediate feedback helps users discover and remember commands, reducing the need for memorization and speeding up the learning process. It improves workflow efficiency by allowing users to quickly access commands without interrupting their tasks. Additionally, =which-key= is highly customizable, supporting complex keymaps and personalized setups.
+
+** Submaps
+
+Submaps are keymaps bound to specific prefix keys, grouping related commands under a common prefix. This logical grouping makes key bindings easier to remember and use while reducing conflicts by isolating namespaces for different command sets. Submaps support a hierarchical structure, which is scalable and modular, allowing users to expand and manage their configurations more effectively.
+
+** Combined Benefits
+
+Together, =which-key= and submaps provide a powerful combination for managing key bindings. =which-key= enhances the discoverability of commands within submaps, helping users learn complex setups interactively. This combination reduces the memorization burden, streamlines workflows, and ensures an organized and efficient keybinding system in your sway setup.
+
+[[./previews/which-key.gif]]

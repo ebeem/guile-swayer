@@ -26,68 +26,34 @@
              (swayipc))
 
 
+;; get focused workspace from a list of workspaces
+(define (focused-workspace-name workspaces)
+  (cond
+    ((null? workspaces) #f)
+    ((equal? #t (sway-workspace-focused (car workspaces)))
+     (sway-workspace-name (car workspaces)))
+    (else (focused-workspace-name (cdr workspaces)))))
+
+(format #t "output record from function #sway-get-workspaces:\n ~a\n"
+        (sway-get-workspaces)) 
+
+(format #t "current focused workspace is [~a]\n"
+        (focused-workspace-name (sway-get-workspaces)))
+
+;; assign simple keybindings
+;; refer to the module modules/general.scm for easier interface
+(sway-bindsym "Mod4+t" "exec alacritty")
+
+;; subscribe to events
+(define (workspace-changed workspace-event)
+  (let* ((current-tree (sway-workspace-event-current workspace-event))
+         (workspace (sway-tree-name current-tree)))
+
+    (format #t "workspace changed to ~a!\n" workspace)))
+
 ;; subscribe to all events
 (sway-subscribe-all)
 
-(define (workspace-changed event)
-  (display "workspace-changed\n")
-  (pretty-print event))
-
 (add-hook! sway-workspace-hook workspace-changed)
-
-(define (output-changed event)
-  (display "output-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-output-hook output-changed)
-
-(define (mode-changed event)
-  (display "mode-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-mode-hook mode-changed)
-
-(define (window-changed event)
-  (display "window-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-window-hook window-changed)
-
-(define (binding-changed event)
-  (display "binding-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-binding-hook binding-changed)
-
-(define (bar-config-changed event)
-  (display "bar-config-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-bar-config-hook bar-config-changed)
-
-(define (shutdown-changed event)
-  (display "shutdown-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-shutdown-hook shutdown-changed)
-
-(define (tick-changed event)
-  (display "tick-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-tick-hook tick-changed)
-
-(define (bar-state-update-changed event)
-  (display "bar-state-update-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-bar-state-update-hook bar-state-update-changed)
-
-(define (input-changed event)
-  (display "input-changed\n")
-  (pretty-print event))
-
-(add-hook! sway-input-hook input-changed)
-
 (sway-start-event-listener-thread)
 (thread-join! SWAY-LISTENER-THREAD)

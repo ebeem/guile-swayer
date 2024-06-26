@@ -1,7 +1,7 @@
 #+STARTUP: inlineimages
 #+OPTIONS: toc:3 ^:nil
 
-** SWAYIPC
+** Guile Swayer
 
 I am an =Emacs= user and previously used =StumpWM=, an =X11= window manager written in =Common Lisp=. I believe window managers should be scriptable because the level of workflow customization required by users often exceeds what can be achieved with simple configuration parameters (see my workflow below for a clearer understanding of why this is the case). Unfortunately, =Sway/i3= lacks a straightforward programmable interface for customization. This project provides complete control over =Sway/i3= using =Guile=! 
 
@@ -96,7 +96,7 @@ You can assign keybindings that execute Guile code! Obviously, running shell com
 
 *** Subscribe to Events
 
-Certain scenarios necessitate subscribing to events. One example from my =workflow= described below requires this capability. With =swayipc=, you have the ability to listen for events and execute actions in response.
+Certain scenarios necessitate subscribing to events. One example from my =workflow= described below requires this capability. With =guile-swayer=, you have the ability to listen for events and execute actions in response.
 
 #+begin_src scheme
   ;; subscribe to events
@@ -133,15 +133,15 @@ It's important to know where you clone the repo as you will have to reference it
 
 **** Root Directory
 
-|------------+-----------------------------------------------------------------|
-| File       | Description                                                     |
-|------------+-----------------------------------------------------------------|
-| examples   | Examples of configurations the you can refer to for inspiration |
-| modules    | Directory containing modules for extending Sway using =swayipc=.  |
-| sjson      | A patched version of =guile-json= (temporarily).                  |
-| swayipc    | Directory containing the core code for =swayipc=.                 |
-| README.org | This readme file                                                |
-|------------+-----------------------------------------------------------------|
+|------------+---------------------------------------------------------------------|
+| File       | Description                                                         |
+|------------+---------------------------------------------------------------------|
+| examples   | Examples of configurations the you can refer to for inspiration     |
+| modules    | Directory containing modules for extending Sway using =guile-swayer=. |
+| sjson      | A patched version of =guile-json= (temporarily).                      |
+| swayipc    | Directory containing the core code for =swayipc=.                     |
+| README.org | This readme file                                                    |
+|------------+---------------------------------------------------------------------|
 
 **** swayipc Directory
 |------------+-----------------------------------------------------------------------------|
@@ -178,7 +178,7 @@ exec_always "pkill -f '.*guile.*sway/init.scm'"
 exec_always "sleep 0.5 && ~/.config/sway/init.scm"
 #+end_src
 
-2- I plan to publish a module for =swayipc=, it's currently not hosted anywhere. You'll need to add the module to your =load path=. Additionally, =swayipc= includes another patched Guile library called =guile-json=, which is embedded for now. In the future, this will be included as a separate dependency rather than embedded.
+2- I plan to publish a module for =guile-swayer=, it's currently not hosted anywhere. You'll need to add the module to your =load path=. Additionally, =swayipc= includes another patched Guile library called =guile-json=, which is embedded for now. In the future, this will be included as a separate dependency rather than embedded.
 
 #+begin_src scheme
 (add-to-load-path

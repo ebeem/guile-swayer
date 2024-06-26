@@ -1,6 +1,6 @@
 include /etc/sway/config.d/*
 
-# good idea to kill all current guile swayipc instances first
+# good idea to kill all current guile guile-swayer instances first
 exec_always "pkill -f '.*guile.*sway/init.scm'"
 
 # then run a fresh instance

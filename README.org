@@ -265,4 +265,4 @@ Submaps are keymaps bound to specific prefix keys, grouping related commands und
 
 Together, =which-key= and submaps provide a powerful combination for managing key bindings. =which-key= enhances the discoverability of commands within submaps, helping users learn complex setups interactively. This combination reduces the memorization burden, streamlines workflows, and ensures an organized and efficient keybinding system in your sway setup.
 
-[[./previews/which-key.gif]]
+[[./preview/which-key.gif]]

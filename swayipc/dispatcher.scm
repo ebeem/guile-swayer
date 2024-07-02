@@ -94,8 +94,9 @@
             SWAY-SMART-GAPS-TOGGLE
             SWAY-SMART-GAPS-INVERSE-OUTER
             SWAY-RESIZE-TYPE-SHRINK
-            SWAY-RESIZE-TYPE-GROW-WIDTH
-            SWAY-RESIZE-TYPE-GROW-HEIGHT
+            SWAY-RESIZE-TYPE-GROW
+            SWAY-RESIZE-DIRECTION-HEIGHT
+            SWAY-RESIZE-DIRECTION-WIDTH
             SWAY-SIZE-UNIT-PX
             SWAY-SIZE-UNIT-PPT
             SWAY-SPLIT-VERTICAL
@@ -632,34 +633,36 @@ Response:
    (string-append "rename workspace to " new-name)))
 
 (define SWAY-RESIZE-TYPE-SHRINK "shrink")
-(define SWAY-RESIZE-TYPE-GROW-WIDTH "grow height")
-(define SWAY-RESIZE-TYPE-GROW-HEIGHT "grow width")
+(define SWAY-RESIZE-TYPE-GROW "grow")
+(define SWAY-RESIZE-DIRECTION-HEIGHT "height")
+(define SWAY-RESIZE-DIRECTION-WIDTH "width")
 
 (define SWAY-SIZE-UNIT-PX "px")
 (define SWAY-SIZE-UNIT-PPT "ppt")
 
-(define* (sway-resize type amount #:key unit)
+(define* (sway-resize type direction amount #:key unit)
  "Resizes the currently focused container by amount, specified in pixels or percentage points.
 If the units are omitted, floating containers are resized in px and tiled containers by ppt.
   parameters:
-    - type: `SWAY-RESIZE-TYPE-SHRINK`, `SWAY-RESIZE-TYPE-GROW-WIDTH`, `SWAY-RESIZE-TYPE-GROW-HEIGHT`
+    - type: `SWAY-RESIZE-TYPE-SHRINK`, `SWAY-RESIZE-TYPE-GROW`
+    - direction: `SWAY-RESIZE-DIRECTION-HEIGHT`, `SWAY-RESIZE-DIRECTION-WIDTH`
     - amount: number
     - unit: `SWAY-SIZE-UNIT-PX`, `SWAY-SIZE-UNIT-PPT`"
   (sway-dispatch-command
-   (string-append "resize " type " "
-                  (number->string amount)
+   (string-append "resize " type " " direction " "
+                  (if amount (string-append " " (number->string amount)) "")
                   (if unit (string-append " " unit) ""))))
 
 (define* (sway-resize-height amount #:key unit)
  "Sets the height of the container to height, specified in pixels or percentage points."
   (sway-dispatch-command
-   (string-append "resize height " (number->string amount)
+   (string-append "resize set height " (number->string amount)
                   (if unit (string-append " " unit) ""))))
 
 (define* (sway-resize-width amount #:key unit)
  "Sets the width of the container to width, specified in pixels or percentage points."
   (sway-dispatch-command
-   (string-append "resize width " (number->string amount)
+   (string-append "resize set width " (number->string amount)
                   (if unit (string-append " " unit) ""))))
 
 (define (sway-show-scratchpad)

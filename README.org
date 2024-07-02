@@ -11,6 +11,8 @@ I had to migrate to =Wayland= at some point. Being a big fan of =StumpWM=, I tri
 
 ** Quick Test
 
+Note: refer to the github wiki for more documentation.
+
 After cloning this repository, you can immediately test it using the provided =examples/playground/example.scm= file in the directory, which demonstrates some of the features available in this package.
 
 The =examples/playground/example.scm= file will:

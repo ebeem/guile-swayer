@@ -149,6 +149,7 @@
             sway-border-toggle
             sway-exit
             sway-floating
+            sway-mark
             sway-focus-container-criteria
             sway-focus-container
             sway-focus-container-sibling

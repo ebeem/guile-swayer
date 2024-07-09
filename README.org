@@ -123,8 +123,9 @@ The event listener thread is a Unix socket that waits for sway events. This must
   (thread-join! SWAY-LISTENER-THREAD)
 #+end_src
 
-** Documentation (WIP)
+** Documentation
 
+Refer to the wiki for more information.
 Most of the source code is documented. You can refer to =examples/stumpwm-like/init.scm= for a complex stumpwm like configuration example. Here are some important points to consider before hacking your Sway setup
 
 *** Quick Start

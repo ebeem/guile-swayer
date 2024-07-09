@@ -293,102 +293,115 @@ Response:
 (define SWAY-ORIENTATION-VERTICAL "vertical")
 (define SWAY-ORIENTATION-AUTO "auto")
 
-(define (sway-default-orientation orientation)
+(define* (sway-default-orientation orientation #:key (exec #t))
   "Sets the default container layout for tiled containers.
   parameters:
     - orientation: `SWAY-ORIENTATION-HORIZONTAL`, `SWAY-ORIENTATION-VERTICAL`, `SWAY-ORIENTATION-AUTO`"
-  (sway-dispatch-command
-   (string-append "default_orientation " orientation)))
+  (let ((command (format #f "default_orientation ~a" orientation)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-include file-path)
+(define* (sway-include file-path #:key (exec #t))
   "Includes another configuration file from path (not scheme file).
   parameters:
     - file-path: string"
-  (sway-dispatch-command
-   (string-append "include " file-path)))
+  (let ((command (format #f "include ~a" file-path)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-swaybg-command command)
+(define* (sway-swaybg-command command #:key (exec #t))
   "Executes custom background command.  Default  is  swaybg.
   parameters:
     - command: string"
-  (sway-dispatch-command
-   (string-append "swaybg_command " command)))
+  (let ((command (format #f "swaybg_command ~a" command)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-swaynag-command command)
+(define* (sway-swaynag-command command #:key (exec #t))
   "Executes custom command for swaynag. Default is swaynag.
   parameters:
     - command: string"
-  (sway-dispatch-command
-   (string-append "swaynag_command " command)))
+  (let ((command (format #f "swaynag_command ~a" command)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-LAYOUT-DEFAULT "default")
 (define SWAY-LAYOUT-STACKING "stacking")
 (define SWAY-LAYOUT-TABBED "tabbed")
 
-(define (sway-workspace-layout layout)
+(define* (sway-workspace-layout layout #:key (exec #t))
   "Specifies the initial layout for new containers in  an  empty  workspace.
   parameters:
     - layout: `SWAY-LAYOUT-DEFAULT`, `SWAY-LAYOUT-STACKING`, `SWAY-LAYOUT-TABBED`"
-  (sway-dispatch-command
-   (string-append "workspace_layout " layout)))
+  (let ((command (format #f "workspace_layout ~a" layout)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-XWAYLAND-ENABLE "enable")
 (define SWAY-XWAYLAND-DISABLE "disable")
 (define SWAY-XWAYLAND-FORCE "force")
 
-(define (sway-xwayland option)
+(define* (sway-xwayland option #:key (exec #t))
   "Enables or disables Xwayland support, which allows X11 applications to be used.
   parameters:
     - option: `SWAY-XWAYLAND-ENABLE`, `SWAY-XWAYLAND-DISABLE`, `SWAY-XWAYLAND-FORCE`"
-  (sway-dispatch-command
-   (string-append "xwayland " (cond
-                               ((equal? #t option) SWAY-XWAYLAND-ENABLE)
-                               ((equal? #f option) SWAY-XWAYLAND-DISABLE)
-                               (else option)))))
+  (let* ((option (cond
+                  ((equal? #t option) SWAY-XWAYLAND-ENABLE)
+                  ((equal? #f option) SWAY-XWAYLAND-DISABLE)
+                  (else option)))
+         (command (format #f "xwayland ~a" option)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-BORDER-NONE "none")
 (define SWAY-BORDER-NORMAL "normal")
 (define SWAY-BORDER-CSD "csd")
 (define SWAY-BORDER-PIXEL "pixel")
 
-(define (sway-border option thickness)
+(define* (sway-border option thickness #:key (exec #t))
   "Enables  or disables Xwayland support, which allows X11 applications to be used.
   parameters:
     - option: `SWAY-BORDER-NONE`, `SWAY-BORDER-NORMAL`, `SWAY-BORDER-CSD`, `SWAY-BORDER-PIXEL`
 	- thickness: int"
-  (sway-dispatch-command
-   (string-append "border " option (number->string thickness))))
+  (let ((command (format #f "border ~a ~a" option thickness)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-border-toggle)
+(define* (sway-border-toggle #:key (exec #t))
   "Cycles through the available border styles."
-  (sway-dispatch-command
-   (string-append "border toggle")))
+  (let ((command (format #f "border toggle")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-exit)
+(define* (sway-exit #:key (exec #t))
   "Exit sway and end your Wayland session."
-  (sway-dispatch-command
-   (string-append "exit")))
+  (let ((command (format #f "exit")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-FLOATING-ENABLED "enabled")
 (define SWAY-FLOATING-DISABLED "disabled")
 (define SWAY-FLOATING-TOGGLE "toggle")
 
-(define (sway-floating option)
+(define* (sway-floating option #:key (exec #t))
   "Make focused view floating, non-floating, or the opposite of what it is now.
   parameters:
     - layout: `SWAY-FLOATING-ENABLED`, `SWAY-FLOATING-DISABLED`, `SWAY-FLOATING-TOGGLE`"
-  (sway-dispatch-command
-   (string-append "floating " (cond
-                               ((equal? #t option) SWAY-FLOATING-ENABLED)
-                               ((equal? #f option) SWAY-FLOATING-DISABLED)
-                               (else option)))))
+  (let* ((option (cond
+                  ((equal? #t option) SWAY-FLOATING-ENABLED)
+                  ((equal? #f option) SWAY-FLOATING-DISABLED)
+                  (else option)))
+         (command (format #f "floating ~a" option)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-container-criteria criteria)
+(define* (sway-focus-container-criteria criteria #:key (exec #t))
   "Moves focus to the container that matches the specified criteria.
   parameters:
     - criteria: sway criteria"
-  (sway-dispatch-command
-   (string-append criteria " focus")))
+  (let ((command (format #f "~a focus" criteria)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-DIRECTION-UP "up")
 (define SWAY-DIRECTION-RIGHT "right")
@@ -399,69 +412,79 @@ Response:
 (define SWAY-HIERARCHY-CHILD "child")
 (define SWAY-HIERARCHY-PARENT "parent")
 
-(define (sway-focus-container direction)
+(define* (sway-focus-container direction #:key (exec #t))
   "Moves focus to the next container in the specified direction.
   parameters:
     - direction: `SWAY-DIRECTION-UP`, `SWAY-DIRECTION-RIGHT`, `SWAY-DIRECTION-DOWN`, `SWAY-DIRECTION-LEFT`"
-  (sway-dispatch-command
-   (string-append "focus " direction)))
+  (let ((command (format #f "focus ~a" direction)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-container-sibling sibling)
+(define* (sway-focus-container-sibling sibling #:key (exec #t))
   "Moves focus to the previous or next container in the current layout.
   parameters:
     - sibling: `SWAY-SIBLING-NEXT`, `SWAY-SIBLING-PREV`"
-  (sway-dispatch-command
-   (string-append "focus " sibling)))
+  (let ((command (format #f "focus ~a" sibling)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-container-child)
+(define* (sway-focus-container-child #:key (exec #t))
   "Moves focus to the last-focused child of the focused container."
-  (sway-dispatch-command
-   (string-append "focus child")))
+  (let ((command (format #f "focus child")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-container-parent)
+(define* (sway-focus-container-parent #:key (exec #t))
   "Moves focus to the last-focused parent of the focused container."
-  (sway-dispatch-command
-   (string-append "focus parent")))
+  (let ((command (format #f "focus parent")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-output-direction direction)
+(define* (sway-focus-output-direction direction #:key (exec #t))
   "Moves focus to the next output in the specified direction.
   parameters:
     - direction: `SWAY-DIRECTION-UP`, `SWAY-DIRECTION-RIGHT`, `SWAY-DIRECTION-DOWN`, `SWAY-DIRECTION-LEFT`"
-  (sway-dispatch-command
-   (string-append "focus output " direction)))
+  (let ((command (format #f "focus output ~a" direction)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-output-name name)
+(define* (sway-focus-output-name name #:key (exec #t))
   "Moves focus to the named output.
   parameters:
     - name: string, output name"
-  (sway-dispatch-command
-   (string-append "focus output " name)))
+  (let ((command (format #f "focus output ~a" name)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-container-tiling)
+(define* (sway-focus-container-tiling #:key (exec #t))
   "Sets focus to the last focused tiling container."
-  (sway-dispatch-command
-   (string-append "focus tiling")))
+  (let ((command (format #f "focus tiling")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-focus-container-floating)
+(define* (sway-focus-container-floating #:key (exec #t))
   "Sets focus to the last focused floating container."
-  (sway-dispatch-command
-   (string-append "focus floating")))
+  (let ((command (format #f "focus floating")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-FULLSCREEN-ENABLED "enabled")
 (define SWAY-FULLSCREEN-DISABLED "disabled")
 (define SWAY-FULLSCREEN-TOGGLE "toggle")
 
-(define* (sway-fullscreen option #:key global)
+(define* (sway-fullscreen option #:key global (exec #t))
   "Makes focused view fullscreen, non-fullscreen, or the opposite of current.
   parameters:
     - option: `SWAY-FULLSCREEN-ENABLED`, `SWAY-FULLSCREEN-DISABLED`, `SWAY-FULLSCREEN-TOGGLE`
     - global: #t, #f"
-  (sway-dispatch-command
-   (string-append "fullscreen " (cond
-                                 ((equal? #t option) SWAY-FULLSCREEN-ENABLED)
-                                 ((equal? #f option) SWAY-FULLSCREEN-DISABLED)
-                                 (else option))
-                  (if global " global" ""))))
+  (let* ((option (cond
+                  ((equal? #t option) SWAY-FULLSCREEN-ENABLED)
+                  ((equal? #f option) SWAY-FULLSCREEN-DISABLED)
+                  (else option)))
+         (global (if global "global" ""))
+         (command (format #f "fullscreen ~a ~a" option global)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-GAPS-OPTION-INNER "inner")
 (define SWAY-GAPS-OPTION-OUTER "outer")
@@ -479,7 +502,7 @@ Response:
 (define SWAY-GAPS-WORKSPACE-MINUS "minus")
 (define SWAY-GAPS-WORKSPACE-TOGGLE "toggle")
 
-(define (sway-gaps option workspace amount)
+(define* (sway-gaps option workspace amount #:key (exec #t))
   "Changes the inner or outer gaps for either all workspaces or the current workspace.
   parameters:
     - option: `SWAY-GAPS-OPTION-INNER`, `SWAY-GAPS-OPTION-OUTER`, `SWAY-GAPS-OPTION-HORIZONTAL`,
@@ -488,8 +511,9 @@ Response:
     - workspace: `SWAY-GAPS-WORKSPACE-ALL`, `SWAY-GAPS-WORKSPACE-CURRENT`, `SWAY-GAPS-WORKSPACE-SET`,
                  `SWAY-GAPS-WORKSPACE-PLUS`, `SWAY-GAPS-WORKSPACE-MINUS`, `SWAY-GAPS-WORKSPACE-TOGGLE`
     - amount: amount of gap (number)"
-  (sway-dispatch-command
-   (string-append "gaps " option " " workspace " " (number->string amount))))
+  (let* ((command (format #f "gaps ~a ~a ~a" option workspace amount)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-INHIBIT-IDLE-FOCUS "focus")
 (define SWAY-INHIBIT-IDLE-FULLSCREEN "fullscreen")
@@ -497,67 +521,75 @@ Response:
 (define SWAY-INHIBIT-IDLE-NONE "none")
 (define SWAY-INHIBIT-IDLE-VISIBLE "visible")
 
-(define (sway-inhibit-idle option)
+(define* (sway-inhibit-idle option #:key (exec #t))
   "Set/unset an idle inhibitor for the view.
   parameters:
     - option: `SWAY-INHIBIT-IDLE-FOCUS`, `SWAY-INHIBIT-IDLE-FULLSCREEN`, `SWAY-INHIBIT-IDLE-OPEN`,
               `SWAY-INHIBIT-IDLE-NONE`, `SWAY-INHIBIT-IDLE-VISIBLE`"
-  (sway-dispatch-command
-   (string-append "inhibit_idle " option)))
+  (let* ((command (format #f "inhibit_idle ~a" option)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-LAYOUT-SPLITH "splith")
 (define SWAY-LAYOUT-SPLITV "splitv")
-(define SWAY-LAYOUT-STACKING "stacking")
 
-(define (sway-layout option)
+(define* (sway-layout option #:key (exec #t))
   "Set/unset an idle inhibitor for the view.
   parameters:
     - option: `SWAY-LAYOUT-DEFAULT`, `SWAY-LAYOUT-SPLITH`, `SWAY-LAYOUT-SPLITV`,
               `SWAY-LAYOUT-STACKING`, `SWAY-LAYOUT-TABBED`"
-  (sway-dispatch-command
-   (string-append "layout " option)))
+  (let* ((command (format #f "layout ~a" option)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-LAYOUT-TOGGLE-ALL "all")
 (define SWAY-LAYOUT-TOGGLE-SPLIT "split")
 
-(define* (sway-layout-toggle #:key option)
+(define* (sway-layout-toggle #:key option (exec #t))
   "Cycles the layout mode of the focused container though a preset list of layouts.
   parameters:
     - option: `SWAY-LAYOUT-TOGGLE-ALL`, `SWAY-LAYOUT-TOGGLE-SPLIT`"
-  (sway-dispatch-command
-   (string-append "layout toggle" (if option (string-append " " option) ""))))
+  (let* ((option (if option (format #f " ~a" option) ""))
+         (command (format #f "layout toggle~a" option)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-move-container direction #:key amount)
+(define* (sway-move-container direction #:key amount (exec #t))
   "Moves the focused container in the direction specified.
   parameters:
     - direction: `SWAY-DIRECTION-UP`, `SWAY-DIRECTION-RIGHT`, `SWAY-DIRECTION-DOWN`, `SWAY-DIRECTION-LEFT`
     - amount: int"
-  (sway-dispatch-command
-   (string-append "move " direction
-                  (if amount (string-append " " (number->string amount)) ""))))
+  (let* ((amount (or amount ""))
+         (command (format #f "move ~a ~a" direction amount)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-move-container-absolute-position x y)
+(define* (sway-move-container-absolute-position x y #:key (exec #t))
   "Moves the focused container to the specified position in the workspace.
   parameters:
     - x: int
     - y: int"
-  (sway-dispatch-command
-   (string-append "move absolute position " (number->string x) " " (number->string y))))
+  (let* ((command (format #f "move absolute position ~a ~a" x y)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-move-container-absolute-center)
+(define* (sway-move-container-absolute-center #:key (exec #t))
   "Moves the focused container to be centered on the workspace."
-  (sway-dispatch-command
-   (string-append "move absolute position center")))
+  (let* ((command (format #f "move absolute position center")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-move-container-cursor)
+(define* (sway-move-container-cursor #:key (exec #t))
   "Moves the focused container to be centered on the cursor."
-  (sway-dispatch-command
-   (string-append "move position cursor")))
+  (let* ((command (format #f "move position cursor")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-move-container-to-mark mark)
+(define* (sway-move-container-to-mark mark #:key (exec #t))
   "Moves the focused container to the specified mark."
-  (sway-dispatch-command
-   (string-append "move container to mark " mark)))
+  (let* ((command (format #f "move container to mark ~a" mark)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-WORKSPACE-PREVIOUS "prev")
 (define SWAY-WORKSPACE-NEXT "next")
@@ -566,13 +598,14 @@ Response:
 (define SWAY-WORKSPACE-NEXT-ON-OUTPUT "next_on_output")
 (define SWAY-WORKSPACE-BACK-AND-FORTH "back_and_forth")
 
-(define (sway-move-container-to-workspace workspace)
+(define* (sway-move-container-to-workspace workspace #:key (exec #t))
   "Moves the focused container to the workspace name
   parameters:
     - workspace: workspace name, `SWAY-WORKSPACE-PREVIOUS`, `SWAY-WORKSPACE-NEXT`, `SWAY-WORKSPACE-CURRENT`,
                  `SWAY-WORKSPACE-PREVIOUS-ON-OUTPUT`, `SWAY-WORKSPACE-NEXT-ON-OUTPUT`, `SWAY-WORKSPACE-BACK-AND-FORTH`"
-  (sway-dispatch-command
-   (string-append "move container to workspace \"" workspace "\"")))
+  (let* ((command (format #f "move container to workspace \"~a\"" workspace)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-OUTPUT-CURRENT "current")
 (define SWAY-OUTPUT-UP "up")
@@ -580,57 +613,60 @@ Response:
 (define SWAY-OUTPUT-DOWN "down")
 (define SWAY-OUTPUT-LEFT "left")
 
-(define (sway-move-container-to-output output)
+(define* (sway-move-container-to-output output #:key (exec #t))
   "Moves the focused container to the specified output id|name|direction.
   parameters:
     - workspace: output name, output id, `SWAY-OUTPUT-CURRENT`, `SWAY-OUTPUT-UP`,
                  `SWAY-OUTPUT-RIGHT`, `SWAY-OUTPUT-DOWN`, `SWAY-OUTPUT-LEFT`"
-  (sway-dispatch-command
-   (string-append "move container to output " (or (and (number? output)
-                                                          (number->string output))
-                                                     output))))
+  (let* ((command (format #f "move container to output \"~a\"" output)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-move-container-to-scratchpad)
+(define* (sway-move-container-to-scratchpad #:key (exec #t))
   "Moves the focused container to the scratchpad."
-  (sway-dispatch-command
-   (string-append "move container to scratchpad")))
+  (let* ((command (format #f "move container to scratchpad")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-move-workspace-to-output output)
+(define* (sway-move-workspace-to-output output #:key (exec #t))
   "Moves the focused workspace to the specified output id|name|direction.
   parameters:
     - workspace: output name, output id, `SWAY-OUTPUT-CURRENT`, `SWAY-OUTPUT-UP`,
                  `SWAY-OUTPUT-RIGHT`, `SWAY-OUTPUT-DOWN`, `SWAY-OUTPUT-LEFT`"
-  (sway-dispatch-command
-   (string-append "move workspace to output " (or (and (number? output)
-                                                          (number->string output))
-                                                     output))))
+  (let* ((command (format #f "move workspace to output ~a" output)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-nop #:key (comment ""))
+(define* (sway-nop #:key (comment "") (exec #t))
   "A no operation command that can be used to override default behaviour.
   parameters:
     - comment: optional comment argument is ignored, but logged for debugging purposes."
-  (sway-dispatch-command
-   (string-append "nop " comment)))
+  (let* ((command (format #f "nop ~a" comment)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-reload)
+(define* (sway-reload #:key (exec #t))
   "Reloads the sway config file and applies any changes."
-  (sway-dispatch-command
-   (string-append "reload")))
+  (let* ((command (format #f "reload")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-rename-workspace old-name new-name)
+(define* (sway-rename-workspace old-name new-name #:key (exec #t))
   "Rename workspace <old_name> to the <new_name>
   parameters:
     - old-name: old workspace name (str).
     - new-name: new workspace name (str)."
-  (sway-dispatch-command
-   (string-append "rename workspace " old-name " to " new-name)))
+  (let* ((command (format #f "rename workspace ~a to ~a" old-name new-name)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-rename-current-workspace new-name)
+(define* (sway-rename-current-workspace new-name #:key (exec #t))
   "Rename current workspace to the <new_name>
   parameters:
     - new-name: new workspace name (str)."
-  (sway-dispatch-command
-   (string-append "rename workspace to " new-name)))
+  (let* ((command (format #f "rename workspace to ~a" new-name)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-RESIZE-TYPE-SHRINK "shrink")
 (define SWAY-RESIZE-TYPE-GROW "grow")
@@ -640,86 +676,92 @@ Response:
 (define SWAY-SIZE-UNIT-PX "px")
 (define SWAY-SIZE-UNIT-PPT "ppt")
 
-(define* (sway-resize type direction amount #:key unit)
- "Resizes the currently focused container by amount, specified in pixels or percentage points.
+(define* (sway-resize type direction amount #:key unit (exec #t))
+  "Resizes the currently focused container by amount, specified in pixels or percentage points.
 If the units are omitted, floating containers are resized in px and tiled containers by ppt.
   parameters:
     - type: `SWAY-RESIZE-TYPE-SHRINK`, `SWAY-RESIZE-TYPE-GROW`
     - direction: `SWAY-RESIZE-DIRECTION-HEIGHT`, `SWAY-RESIZE-DIRECTION-WIDTH`
     - amount: number
     - unit: `SWAY-SIZE-UNIT-PX`, `SWAY-SIZE-UNIT-PPT`"
-  (sway-dispatch-command
-   (string-append "resize " type " " direction " "
-                  (if amount (string-append " " (number->string amount)) "")
-                  (if unit (string-append " " unit) ""))))
+  (let* ((unit (or unit ""))
+         (command (format #f "resize ~a ~a ~a ~a" type direction amount unit)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-resize-height amount #:key unit)
- "Sets the height of the container to height, specified in pixels or percentage points."
-  (sway-dispatch-command
-   (string-append "resize set height " (number->string amount)
-                  (if unit (string-append " " unit) ""))))
+(define* (sway-resize-height amount #:key unit (exec #t))
+  "Sets the height of the container to height, specified in pixels or percentage points."
+  (let* ((unit (or unit ""))
+         (command (format #f "resize set height ~a ~a" amount unit)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-resize-width amount #:key unit)
- "Sets the width of the container to width, specified in pixels or percentage points."
-  (sway-dispatch-command
-   (string-append "resize set width " (number->string amount)
-                  (if unit (string-append " " unit) ""))))
+(define* (sway-resize-width amount #:key unit (exec #t))
+  "Sets the width of the container to width, specified in pixels or percentage points."
+  (let* ((unit (or unit ""))
+         (command (format #f "resize set width ~a ~a" amount unit)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-show-scratchpad)
- "Shows a window from the scratchpad."
-  (sway-dispatch-command
-   (string-append "scratchpad show")))
+(define* (sway-show-scratchpad #:key (exec #t))
+  "Shows a window from the scratchpad."
+  (let* ((command (format #f "scratchpad show")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-shortcuts-inhibitor flag)
- "Enables or disables the ability of clients to inhibit keyboard shortcuts for a view."
-  (sway-dispatch-command
-   (string-append "scratchpad " (if flag "enabled" "disabled"))))
+(define* (sway-shortcuts-inhibitor flag #:key (exec #t))
+  "Enables or disables the ability of clients to inhibit keyboard shortcuts for a view."
+  (let* ((flag (if flag "enabled" "disabled"))
+         (command (format #f "shortcuts_inhibitor ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-SPLIT-VERTICAL "vertical")
 (define SWAY-SPLIT-HORIZONTAL "horizontal")
 (define SWAY-SPLIT-NONE "none")
 (define SWAY-SPLIT-TOGGLE "toggle")
 
-(define (sway-split-container option)
+(define* (sway-split-container option #:key (exec #t))
   "Splits the current container, vertically or horizontally. When none is specified,
    the effect of a previous split is undone.
   parameters:
     - option: `SWAY-SPLIT-VERTICAL`, `SWAY-SPLIT-HORIZONTAL`, `SWAY-SPLIT-NONE`, `SWAY-SPLIT-TOGGLE`"
-  (sway-dispatch-command
-   (string-append "split " option)))
+  (let* ((command (format #f "split ~a" option)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-STICKY-ENABLE "enable")
 (define SWAY-STICKY-DISABLE "disable")
 (define SWAY-STICKY-TOGGLE "toggle")
 
-(define (sway-sticky flag)
+(define* (sway-sticky flag #:key (exec #t))
   "Sticks a floating window to the current output so that it shows up on all workspaces.
   parameters:
     - flag: `SWAY-STICKY-ENABLE`, `SWAY-STICKY-DISABLE`, `SWAY-STICKY-TOGGLE`"
-  (sway-dispatch-command
-   (string-append "sticky " (cond
-                               ((equal? #t flag) SWAY-STICKY-ENABLE)
-                               ((equal? #f flag) SWAY-STICKY-DISABLE)
-                               (else flag)))))
+  (let* ((flag (cond
+                ((equal? #t flag) SWAY-STICKY-ENABLE)
+                ((equal? #f flag) SWAY-STICKY-DISABLE)
+                (else flag)))
+         (command (format #f "sticky ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-SWAY-CONTAINER-TYPE-ID "id")
 (define SWAY-SWAY-CONTAINER-TYPE-CONTAINER-ID "con_id")
 (define SWAY-SWAY-CONTAINER-TYPE-MARK "mark")
 
-(define (sway-swap-container type arg)
+(define* (sway-swap-container type arg #:key (exec #t))
   "Swaps the position, geometry, and fullscreen status of focused container with another
    target container.
   parameters:
     - type: `SWAY-SWAY-CONTAINER-TYPE-ID`, `SWAY-SWAY-CONTAINER-TYPE-CONTAINER-ID`,
 			`SWAY-SWAY-CONTAINER-TYPE-MARK`
     - arg: argument passed (based on selected type)"
-  (sway-dispatch-command
-   (string-append "swap container with " type " "
-                  (if (number? arg)
-                      (number->string arg)
-                      arg))))
+  (let* ((command (format #f "swap container with ~a ~a" type arg)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-title-format format)
+(define* (sway-title-format iformat #:key (exec #t))
   "Sets the format of window titles.
   parameters:
     - format: a string that can use some placehodlers to display windows title format
@@ -728,31 +770,31 @@ If the units are omitted, floating containers are resized in px and tiled contai
         %class - The X11  classname  (applicable  to  xwayland windows only)
         %instance  -  The X11 instance (applicable to xwayland windows only)
         %shell - The protocol the window is  using  (typically xwayland or xdg_shell)"
+  (let* ((command (format #f "title_format ~a" iformat)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-  (sway-dispatch-command
-   (string-append "title_format " format)))
-
-(define (sway-assign-to-workspace criteria workspace)
+(define* (sway-assign-to-workspace criteria workspace #:key (exec #t))
   "Assigns views matching criteria to workspace.
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one
     - workspace: workspace name"
-  (sway-dispatch-command
-   (string-append "assign " criteria " workspace " (or (and (number? workspace)
-                                                          (number->string workspace))
-                                                     workspace))))
+  (let* ((command (format #f "assign ~a workspace ~a" criteria workspace)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-assign-to-output criteria output)
+(define* (sway-assign-to-output criteria output #:key (exec #t))
   "Assigns views matching criteria to output.
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one
     - output: output name"
-  (sway-dispatch-command
-   (string-append "assign " criteria " output " output)))
+  (let* ((command (format #f "assign ~a output ~a" criteria output)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-bindsym key command #:key whole-window border exclude-titlebar
                        release locked to-code input-device no-warn
-                       no-repeat inhibited group)
+                       no-repeat inhibited group (exec #t))
   "Binds key combo to execute the sway command command when pressed.
   parameters:
     - key: a string that represents the key to bind
@@ -769,9 +811,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - no-repeat: the command will not be run repeatedly when the key is held
     - inhibited: keyboard shortcuts run also when inhibitor is active for the currently focused window.
     - group: binding will only be available for specified group."
-  (sway-dispatch-command
-   (string-append "bindsym "
-                  (string-join
+  (let* ((options (string-join
                    (filter (lambda (x) (> (string-length x) 0))
                            (list
                             (if whole-window "--whole-window" "")
@@ -786,12 +826,14 @@ If the units are omitted, floating containers are resized in px and tiled contai
                             (if no-repeat "--no-repeat" "")
                             (if inhibited "--inhibited" "")
                             (if group "--group" "")))
-                   " ")
-                  key " " command)))
+                   " "))
+         (command (format #f "bindsym ~a ~a ~a" options key command)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-bindcode code command #:key whole-window border exclude-titlebar
                        release locked input-device no-warn
-                       no-repeat inhibited group)
+                       no-repeat inhibited group (exec #t))
   "for binding with key/button codes instead of key/button names.
   parameters:
     - key: a string that represents the key to bind
@@ -806,9 +848,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - no-repeat: the command will not be run repeatedly when the key is held
     - inhibited: keyboard shortcuts run also when inhibitor is active for the currently focused window.
     - group: binding will only be available for specified group."
-  (sway-dispatch-command
-   (string-append "bindcode "
-                  (string-join
+  (let* ((options (string-join
                    (filter (lambda (x) (> (string-length x) 0))
                            (list
                             (if whole-window "--whole-window" "")
@@ -822,10 +862,12 @@ If the units are omitted, floating containers are resized in px and tiled contai
                             (if no-repeat "--no-repeat" "")
                             (if inhibited "--inhibited" "")
                             (if group "--group" "")))
-                   " ")
-                  code " " command)))
+                   " "))
+         (command (format #f "bindcode ~a ~a ~a" options code command)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-bindswitch switch state command #:key locked no-warn reload)
+(define* (sway-bindswitch switch state command #:key locked no-warn reload (exec #t))
   "Binds <switch> to execute the sway command command on state changes.
   parameters:
     - switch: Supported switches are lid (laptop lid) and tablet (tablet mode) switches.
@@ -834,16 +876,16 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - locked: run command also when screen locking program is active
     - no-warn: silence sway warning when overriding a keybinding
     - reload: the binding should also be executed when the config is reloaded."
-  (sway-dispatch-command
-   (string-append "bindswitch "
-                  (string-join
+  (let* ((options (string-join
                    (filter (lambda (x) (> (string-length x) 0))
                            (list
                             (if locked "--locked" "")
                             (if no-warn "--no-warn" "")
                             (if reload "--reload" "")))
-                   " ")
-                  switch ":" state " " command)))
+                   " "))
+         (command (format #f "bindswitch ~a ~a:~a ~a" options switch state command)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 ;; TODO
 ;;        bindgesture  [--exact]   [--input-device=<device>]   [--no-warn]   <ges‐
@@ -898,13 +940,14 @@ If the units are omitted, floating containers are resized in px and tiled contai
 ;;                      bindgesture pinch:inward+left move left
 ;;                      bindgesture pinch:inward+right move right
 
-(define* (sway-unbindswitch switch state)
+(define* (sway-unbindswitch switch state #:key (exec #t))
   "Removes a binding for when <switch> changes to <state>.
   parameters:
     - switch: Supported switches are lid (laptop lid) and tablet (tablet mode) switches.
     - state: valid values are on, off and toggle."
-  (sway-dispatch-command
-   (string-append "unbindswitch " switch ":" state)))
+  (let* ((command (format #f "unbindswitch ~a:~a" switch state)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 ;; TODO
 ;;        unbindgesture   [--exact]   [--input-device=<device>]   <gesture>[:<fin‐
@@ -913,7 +956,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
 ;;            combination.
 
 (define* (sway-unbindsym key #:key whole-window border exclude-titlebar
-                       release locked to-code input-device)
+                       release locked to-code input-device (exec #t))
   "Removes the binding for key combo that was previously bound with the given flags.
   parameters:
     - key: a string that represents the key to bind
@@ -925,9 +968,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - to-code: the keysyms will be translated into the corresponding keycodes
                this will make them layout independant
     - input-device: the binding will only be executed for specified input device"
-  (sway-dispatch-command
-   (string-append "unbindsym "
-                  (string-join
+  (let* ((options (string-join
                    (filter (lambda (x) (> (string-length x) 0))
                            (list
                             (if whole-window "--whole-window" "")
@@ -938,11 +979,13 @@ If the units are omitted, floating containers are resized in px and tiled contai
                             (if locked "--locked" "")
                             (if to-code "--to-code" "")
                             (if input-device (string-append "--input-device=" input-device) "")))
-                   " ")
-                  key)))
+                   " "))
+         (command (format #f "unbindsym ~a ~a" options key)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-unbindcode code #:key whole-window border exclude-titlebar
-                       release locked input-device)
+                       release locked input-device (exec #t))
   "Removes the binding for code that was previously bound with the given flags.
   parameters:
     - key: a string that represents the key to bind
@@ -952,9 +995,7 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - release: command is executed when the key combo is released.
     - locked: run command also when screen locking program is active
     - input-device: the binding will only be executed for specified input device"
-  (sway-dispatch-command
-   (string-append "unbindcode "
-                  (string-join
+  (let* ((options (string-join
                    (filter (lambda (x) (> (string-length x) 0))
                            (list
                             (if whole-window "--whole-window" "")
@@ -964,28 +1005,32 @@ If the units are omitted, floating containers are resized in px and tiled contai
                             (if release "--release" "")
                             (if locked "--locked" "")
                             (if input-device (string-append "--input-device=" input-device) "")))
-                   " ")
-                  code)))
+                   " "))
+         (command (format #f "unbindcode ~a ~a" options code)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-unmark identifier)
+(define* (sway-unmark identifier #:key (exec #t))
   "remove identifier from the list of current marks on a window.
   Parameters:
    - mark: string mark."
-  (sway-dispatch-command
-   (string-append "unmark " identifier)))
+  (let* ((command (format #f "unmark ~a" identifier)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-URGENT-ENABLE "enable")
 (define SWAY-URGENT-DISABLE "disable")
 (define SWAY-URGENT-ALLOW "allow")
 (define SWAY-URGENT-DENY "deny")
 
-(define* (sway-urgent flag)
+(define* (sway-urgent flag #:key (exec #t))
   "Using enable or disable manually sets or unsets the window's urgent state.
   Parameters:
    - flag: `SWAY-URGENT-ENABLE`, `SWAY-URGENT-DISABLE`,
            `SWAY-URGENT-ALLOW`, `SWAY-URGENT-DENY`"
-  (sway-dispatch-command
-   (string-append "urgent " flag)))
+  (let* ((command (format #f "urgent ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 ;; The meaning of each color is:
 ;; border: The border around the title bar.
@@ -993,15 +1038,16 @@ If the units are omitted, floating containers are resized in px and tiled contai
 ;; text: The text color of the title bar.
 ;; indicator: The  color  used  to  indicate  where a new view will open.
 ;; child_border: The border around the view itself.
-(define (sway-client-background color)
+(define* (sway-client-background color #:key (exec #t))
   "This command is ignored and is only present for i3 compatibility.
   parameters:
     - color: color code to be used (str)"
-  (sway-dispatch-command
-    (string-append "client.background " color)))
+  (let* ((command (format #f "client.background ~a" color)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-client-focused-color border-color background-color text-color
-                                   #:key indictor-color child-border-color)
+                                   #:key indictor-color child-border-color (exec #t))
   "Configures the color of window borders and title bars of the window that has focus.
   parameters:
     - border-color: color code to be used for border (str)
@@ -1009,13 +1055,16 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (sway-dispatch-command
-   (string-append "client.focused " border-color " " background-color " " text-color
-                  (if indictor-color (string-append " " indictor-color) "")
-                  (if child-border-color (string-append " " child-border-color) ""))))
+  (let* ((indictor-color (or indictor-color ""))
+         (child-border-color (or child-border-color ""))
+         (command (format #f "client.focused ~a ~a ~a ~a ~a"
+                          border-color background-color text-color
+                          indictor-color child-border-color)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-client-focused-inactive-color border-color background-color text-color
-                                   #:key indictor-color child-border-color)
+                                   #:key indictor-color child-border-color (exec #t))
   "Configures the color of window borders and title bars of the most
    recently focused view within a container which  is  not focused.
   parameters:
@@ -1024,12 +1073,15 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (sway-dispatch-command
-   (string-append "client.focused_inactive " border-color " " background-color " " text-color
-                  (if indictor-color (string-append " " indictor-color) "")
-                  (if child-border-color (string-append " " child-border-color) ""))))
+  (let* ((indictor-color (or indictor-color ""))
+         (child-border-color (or child-border-color ""))
+         (command (format #f "client.focused_inactive ~a ~a ~a ~a ~a"
+                          border-color background-color text-color
+                          indictor-color child-border-color)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-client-focused-tab-title-color border-color background-color text-color)
+(define* (sway-client-focused-tab-title-color border-color background-color text-color #:key (exec #t))
   "Configures the color of window borders and title bars of a
    view that has focused descendant container.
   parameters:
@@ -1038,11 +1090,13 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (sway-dispatch-command
-   (string-append "client.focused_tab_title " border-color " " background-color " " text-color)))
+  (let* ((command (format #f "client.focused_tab_title ~a ~a ~a"
+                          border-color background-color text-color)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-client-placeholder-color border-color background-color text-color
-                                   #:key indictor-color child-border-color)
+                                   #:key indictor-color child-border-color (exec #t))
   "Ignored (present for i3 compatibility).
   parameters:
     - border-color: color code to be used for border (str)
@@ -1050,13 +1104,16 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (sway-dispatch-command
-   (string-append "client.placeholder " border-color " " background-color " " text-color
-                  (if indictor-color (string-append " " indictor-color) "")
-                  (if child-border-color (string-append " " child-border-color) ""))))
+  (let* ((indictor-color (or indictor-color ""))
+         (child-border-color (or child-border-color ""))
+         (command (format #f "client.placeholder ~a ~a ~a ~a ~a"
+                          border-color background-color text-color
+                          indictor-color child-border-color)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-client-unfocused-color border-color background-color text-color
-                                   #:key indictor-color child-border-color)
+                                   #:key indictor-color child-border-color (exec #t))
   "Configures the color of window borders and title bars of a
    view that does not have focus.
   parameters:
@@ -1065,13 +1122,16 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (sway-dispatch-command
-   (string-append "client.unfocused " border-color " " background-color " " text-color
-                  (if indictor-color (string-append " " indictor-color) "")
-                  (if child-border-color (string-append " " child-border-color) ""))))
+  (let* ((indictor-color (or indictor-color ""))
+         (child-border-color (or child-border-color ""))
+         (command (format #f "client.unfocused ~a ~a ~a ~a ~a"
+                          border-color background-color text-color
+                          indictor-color child-border-color)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-client-urgent-color border-color background-color text-color
-                                   #:key indictor-color child-border-color)
+                                   #:key indictor-color child-border-color (exec #t))
   "Configures the color of window borders and title bars of a
    view with an urgency hint..
   parameters:
@@ -1080,167 +1140,183 @@ If the units are omitted, floating containers are resized in px and tiled contai
     - text-color: color code to be used for text (str)
     - indictor-color: color code to be used for indicator (str)
     - child-border-color: color code to be used for child border (str)"
-  (sway-dispatch-command
-   (string-append "client.urgent " border-color " " background-color " " text-color
-                  (if indictor-color (string-append " " indictor-color) "")
-                  (if child-border-color (string-append " " child-border-color) ""))))
+  (let* ((indictor-color (or indictor-color ""))
+         (child-border-color (or child-border-color ""))
+         (command (format #f "client.urgent ~a ~a ~a ~a ~a"
+                          border-color background-color text-color
+                          indictor-color child-border-color)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-BORDER-STYLE-NONE "none")
 (define SWAY-BORDER-STYLE-NORMAL "normal")
 (define SWAY-BORDER-STYLE-PIXEL "pixel")
 
-(define* (sway-default-border-style type #:key n)
+(define* (sway-default-border-style type #:key n (exec #t))
   "Set default border style for new tiled windows.
   parameters:
     - type: `SWAY-BORDER-STYLE-NONE`, `SWAY-BORDER-STYLE-NORMAL`, `SWAY-BORDER-STYLE-PIXEL`
     - n: units in case pixel is chosen (number)"
-  (sway-dispatch-command
-   (string-append "default_border " type " " (if n (number->string n) ""))))
+  (let* ((n (or n ""))
+         (command (format #f "default_border ~a ~a" type n)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-default-floating-border-style type #:key n)
+(define* (sway-default-floating-border-style type #:key n (exec #t))
   "Set default border style for new tiled windows.
   parameters:
     - type: color code to be used for border (str)
     - n: units in case pixel is chosen (number)"
-  (sway-dispatch-command
-   (string-append "default_floating_border " type " " (if n (number->string n) ""))))
+  (let* ((n (or n ""))
+         (command (format #f "default_floating_border ~a ~a" type n)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-exec command)
+(define* (sway-exec command #:key (exec #t))
   "Executes shell command with sh.
   parameters:
     - command: command to be executed (str)"
-  (sway-dispatch-command
-   (string-append "exec " command)))
+  (let* ((command (format #f "exec ~a" command)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-exec-always command)
+(define* (sway-exec-always command #:key (exec #t))
   "Like exec, but the shell command will be executed again after reload.
   parameters:
     - command: command to be executed (str)"
-  (sway-dispatch-command
-   (string-append "exec_always " command)))
+  (let* ((command (format #f "exec_always ~a" command)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-floating-maximum-size width height)
+(define* (sway-floating-maximum-size width height #:key (exec #t))
   "Specifies the maximum size of floating windows.
   parameters:
     - width: target size width (number)
     - height: target size height (number)"
-  (sway-dispatch-command
-   (string-append "floating_maximum_size "
-                  (number->string width) " x "
-                  (number->string height))))
+  (let* ((command (format #f "floating_maximum_size ~a ~a" width height)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-floating-minimum-size width height)
+(define* (sway-floating-minimum-size width height #:key (exec #t))
   "Specifies the minimum size of floating windows.
   parameters:
     - width: target size width (number)
     - height: target size height (number)"
-  (sway-dispatch-command
-   (string-append "floating_minimum_size "
-                  (number->string width) " x "
-                  (number->string height))))
+  (let* ((command (format #f "floating_minimum_size ~a ~a" width height)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-FLOATING-MODIFIER-TYPE-NORMAL "normal")
 (define SWAY-FLOATING-MODIFIER-TYPE-INVERSE "inverse")
 
-(define (sway-floating-modifier modifier type)
+(define* (sway-floating-modifier modifier type #:key (exec #t))
   "When the modifier key is held down, you may hold left click to move windows,
    and right click to resize them.
   parameters:
     - modifier: the modifier key (str)
     - type: `SWAY-FLOATING-MODIFIER-TYPE-NORMAL`, `SWAY-FLOATING-MODIFIER-TYPE-INVERSE`"
-  (sway-dispatch-command
-   (string-append "floating_modifier" modifier " x " type)))
+  (let* ((command (format #f "floating_modifier ~a ~a" modifier type)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-FOCUS-FOLLOW-MOUSE-FLAG-YES "yes")
 (define SWAY-FOCUS-FOLLOW-MOUSE-FLAG-NO "no")
 (define SWAY-FOCUS-FOLLOW-MOUSE-FLAG-ALWAYS "always")
 
-(define (sway-focus-follow-mouse flag)
+(define* (sway-focus-follow-mouse flag #:key (exec #t))
   "If set to yes, moving your mouse over a window will focus that window.
    If set to always, the window under the cursor will always be
    focused, even after switching between workspaces.
   parameters:
     - flag: `SWAY-FOCUS-FOLLOW-MOUSE-FLAG-YES`, `SWAY-FOCUS-FOLLOW-MOUSE-FLAG-NO`,
 			`SWAY-FOCUS-FOLLOW-MOUSE-FLAG-ALWAYS`"
-  (sway-dispatch-command
-   (string-append "focus_follows_mouse " flag)))
+  (let* ((command (format #f "focus_follows_mouse ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-SMART "smart")
 (define SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-URGENT "urgent")
 (define SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-FOCUS "focus")
 (define SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-NONE "none")
 
-(define (sway-focus-on-window-activation flag)
+(define* (sway-focus-on-window-activation flag #:key (exec #t))
   "This option determines what to do when a client requests window activation.
   parameters:
     - flag: `SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-SMART`, `SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-URGENT`,
 			`SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-FOCUS`, `SWAY-FOCUS-ON-WINDOW-ACTIVATION-FLAG-NONE`"
-  (sway-dispatch-command
-   (string-append "focus_on_window_activation " flag)))
+  (let* ((command (format #f "focus_on_window_activation ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-FOCUS-WRAPPING-FLAG-YES "yes")
 (define SWAY-FOCUS-WRAPPING-FLAG-NO "no")
 (define SWAY-FOCUS-WRAPPING-FLAG-FORCE "force")
 (define SWAY-FOCUS-WRAPPING-FLAG-WORKSPACE "workspace")
 
-(define (sway-focus-wrapping flag)
+(define* (sway-focus-wrapping flag #:key (exec #t))
   "This option determines what to do when a client requests window activation.
   parameters:
     - flag: `SWAY-FOCUS-WRAPPING-FLAG-YES`, `SWAY-FOCUS-WRAPPING-FLAG-NO`,
 			`SWAY-FOCUS-WRAPPING-FLAG-FORCE`, `SWAY-FOCUS-WRAPPING-FLAG-WORKSPACE`"
-  (sway-dispatch-command
-   (string-append "focus_wrapping " flag)))
+  (let* ((command (format #f "focus_wrapping ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-font font #:key pango)
+(define* (sway-font font #:key pango (exec #t))
   "Sets font to use for the title bars. To enable support for pango markup,
    preface the font name with pango:
   parameters:
     - font: font name (str)
     - pango: whether to use pango or not (boolean)"
-  (sway-dispatch-command
-   (string-append "font " (if pango "pango:" "") font)))
+  (let* ((pango (if pango "pango:" ""))
+         (command (format #f "font ~a~a" pango font)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-force-display-urgency-hint timeout)
+(define* (sway-force-display-urgency-hint timeout #:key (exec #t))
   "If an application on another workspace sets an urgency hint.
   parameters:
     - timeout: urgency timeout (number)"
-  (sway-dispatch-command
-   (string-append "force_display_urgency_hint " (number->string timeout))))
+  (let* ((command (format #f "force_display_urgency_hint ~a" timeout)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-titlebar-border-thickness thickness)
+(define* (sway-titlebar-border-thickness thickness #:key (exec #t))
   "Thickness of the titlebar border in pixels.
   parameters:
     - thickness: thickness of border (number)"
-  (sway-dispatch-command
-   (string-append "titlebar_border_thickness " (number->string thickness))))
+  (let* ((command (format #f "titlebar_border_thickness ~a" thickness)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-titlebar-padding horizontal vertical)
+(define* (sway-titlebar-padding horizontal vertical #:key (exec #t))
   "Padding of the text in the titlebar.
   parameters:
     - horizontal: horizontal padding (number)
     - vertical: vertical padding (number)"
-  (sway-dispatch-command
-   (string-append "titlebar_padding " (number->string horizontal)
-                  " " (number->string vertical))))
+  (let* ((command (format #f "titlebar_padding ~a ~a" horizontal vertical)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-;; TODO: it should be possible to get commands as strings instead of dispatching them immediately
-(define (sway-for-window criteria commands)
+(define* (sway-for-window criteria commands #:key (exec #t))
   "Whenever a window that matches criteria appears, run list of commands.
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one
-    - command: list of commands to execute (string)"
-  (sway-dispatch-command
-   (string-append "for_window " criteria " " commands)))
+    - command: list of commands to execute (string comma seperated)"
+  (let* ((command (format #f "for_window ~a ~a" criteria commands)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-default-gaps option amount)
+(define* (sway-default-gaps option amount #:key (exec #t))
   "Sets default amount pixels of inner or outer gap.
   parameters:
     - option: `SWAY-GAPS-OPTION-INNER`, `SWAY-GAPS-OPTION-OUTER`, `SWAY-GAPS-OPTION-HORIZONTAL`,
               `SWAY-GAPS-OPTION-VERTICAL`, `SWAY-GAPS-OPTION-TOP`, `SWAY-GAPS-OPTION-RIGHT`,
               `SWAY-GAPS-OPTION-BOTTOM`, `SWAY-GAPS-OPTION-LEFT`
     - amount: amount of gap (number)"
-  (sway-dispatch-command
-   (string-append "gaps " option " " (number->string amount))))
+  (let* ((command (format #f "gaps ~a ~a" option amount)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-EDGE-BORDER-TYPE-NONE "none")
 (define SWAY-EDGE-BORDER-TYPE-VERTICAL "vertical")
@@ -1249,243 +1325,274 @@ If the units are omitted, floating containers are resized in px and tiled contai
 (define SWAY-EDGE-BORDER-TYPE-SMART "smart")
 (define SWAY-EDGE-BORDER-TYPE-SMART-NO-GAPS "smart_no_gaps")
 
-(define* (sway-hide-edge-borders type #:key i3)
+(define* (sway-hide-edge-borders type #:key i3 (exec #t))
   "Hides window borders adjacent to the screen edges.
   parameters:
     - type: `SWAY-EDGE-BORDER-TYPE-NONE`, `SWAY-EDGE-BORDER-TYPE-VERTICAL`, `SWAY-EDGE-BORDER-TYPE-HORIZONTAL`,
               `SWAY-EDGE-BORDER-TYPE-BOTH`, `SWAY-EDGE-BORDER-TYPE-SMART`, `SWAY-EDGE-BORDER-TYPE-SMART-NO-GAPS`
     - i3: enables i3-compatible behavior to hide the title bar on tabbed and stacked containers with one child"
-  (sway-dispatch-command
-   (string-append "hide_edge_borders " (if i3 "--i3 " "") type)))
+  (let* ((i3 (if i3 "--i3" ""))
+         (command (format #f "hide_edge_borders ~a ~a" i3 type)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-input device subcommands)
+(define* (sway-input device subcommands #:key (exec #t))
   "For details on input subcommands, see sway-input(5).
   parameters:
     - device: the name of the target device
     - subcommands: list of commands to execute (string)"
-  (sway-dispatch-command
-   (string-append "input " device " " subcommands)))
+  (let* ((command (format #f "input ~a ~a" device subcommands)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-seat seat subcommands)
+(define* (sway-seat seat subcommands #:key (exec #t))
   "For details on input subcommands, see sway-input(5).
   parameters:
     - seat: the name of the seat device
     - subcommands: list of commands to execute (string)"
-  (sway-dispatch-command
-   (string-append "seat " seat " " subcommands)))
+  (let* ((command (format #f "seat ~a ~a" seat subcommands)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-kill)
+(define* (sway-kill #:key (exec #t))
   "Kills (closes) the currently focused container and all of its children."
-  (sway-dispatch-command
-   (string-append "kill")))
+  (let* ((command (format #f "kill")))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-SMART-BORDERS-ON "on")
 (define SWAY-SMART-BORDERS-OFF "off")
 (define SWAY-SMART-BORDERS-NO-GAPS "no_gaps")
 
-(define (sway-smart-borders flag)
+(define* (sway-smart-borders flag #:key (exec #t))
   "If smart_borders are on, borders will only be enabled if the
    workspace has more than one visible child.
   parameters:
     - flag: `SWAY-SMART-BORDERS-ON`, `SWAY-SMART-BORDERS-OFF`, `SWAY-SMART-BORDERS-NO-GAPS`"
-  (sway-dispatch-command
-   (string-append "smart_borders " (cond
-                   ((equal? flag #t) SWAY-SMART-BORDERS-ON)
-                   ((equal? flag #f) SWAY-SMART-BORDERS-OFF)
-                   (else flag)))))
+  (let* ((flag (cond
+                ((equal? #t flag) SWAY-SMART-BORDERS-ON)
+                ((equal? #f flag) SWAY-SMART-BORDERS-OFF)
+                (else flag)))
+         (command (format #f "smart_borders ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-SMART-GAPS-ON "on")
 (define SWAY-SMART-GAPS-OFF "off")
 (define SWAY-SMART-GAPS-TOGGLE "toggle")
 (define SWAY-SMART-GAPS-INVERSE-OUTER "inverse_outer")
 
-(define (sway-smart-gaps flag)
+(define* (sway-smart-gaps flag #:key (exec #t))
   "If smart_gaps are on gaps will only be enabled if a
    workspace has more than one child.
   parameters:
     - flag: `SWAY-SMART-GAPS-ON`, `SWAY-SMART-GAPS-OFF`,
 			`SWAY-SMART-GAPS-TOGGLE`, `SWAY-SMART-GAPS-INVERSE-OUTER`"
-  (sway-dispatch-command
-   (string-append "smart_gaps " (cond
-                   ((equal? flag #t) SWAY-SMART-GAPS-ON)
-                   ((equal? flag #f) SWAY-SMART-GAPS-OFF)
-                   (else flag)))))
+  (let* ((flag (cond
+                ((equal? #t flag) SWAY-SMART-GAPS-ON)
+                ((equal? #f flag) SWAY-SMART-GAPS-OFF)
+                (else flag)))
+         (command (format #f "smart_gaps ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-;;        mark --add|--replace [--toggle] <identifier>
-;;            Marks are arbitrary labels that can be used to identify certain win‐
-;;            dows and then jump to them at a later time. Each identifier can only
-;;            be set on a single window at a time since they act as a unique iden‐
-;;            tifier.  By default, mark sets identifier as the only mark on a win‐
-;;            dow. --add will instead add identifier to the list of current  marks
-;;            for  that  window. If --toggle is specified mark will remove identi‐
-;;            fier if it is already marked.
+(define* (sway-mark identifier #:key add toggle (exec #t))
+  "Marks are arbitrary labels that can be used to identify certain
+windows and then jump to them at a later time.
+  parameters:
+    - add: add identifier to the list of current marks for that window.
+    - toggle: remove identifier if it is already marked.
+    - identifier: label that can be used to identify that window."
+  (let* ((command (format #f "mark ~a ~a ~a"
+                          (if add "--add" "")
+                          (if toggle "--toggle" "")
+                          identifier)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-mode mode)
+(define* (sway-mode mode #:key (exec #t))
   "Switches to the specified mode. The default mode is default.
   parameters:
     - mode: name of the mode (str)"
-  (sway-dispatch-command
-   (string-append "mode \"" mode "\"")))
+  (let* ((command (format #f "mode \"~a\"" mode)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-mode-subcommand mode subcommand)
+(define* (sway-mode-subcommand mode subcommand #:key (exec #t))
   "The only valid mode-subcommands are bindsym, bindcode, bindswitch, and set.
   parameters:
     - mode: name of the mode (str)
     - subcommand: list of subcommands (str)"
-  (sway-dispatch-command
-   (string-append "mode \"" mode "\" " subcommand)))
+  (let* ((command (format #f "mode \"~a\" ~a" mode subcommand)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-MOUSE-WARPING-OUTPUT "output")
 (define SWAY-MOUSE-WARPING-CONTAINER "container")
 (define SWAY-MOUSE-WARPING-NONE "none")
 
-(define (sway-mouse-warping mode)
+(define* (sway-mouse-warping mode #:key (exec #t))
   "If output is specified, the mouse will be moved to new outputs as you move focus between them.
    If container is specified, the mouse will be moved to the middle of the container on switch.
   parameters:
     - mode: `SWAY-MOUSE-WARPING-OUTPUT`, `SWAY-MOUSE-WARPING-CONTAINER`, `SWAY-MOUSE-WARPING-NONE`"
-  (sway-dispatch-command
-   (string-append "mouse_warping " mode)))
+  (let* ((command (format #f "mouse_warping ~a" mode)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-no-focus criteria)
+(define* (sway-no-focus criteria #:key (exec #t))
   "Prevents windows matching <criteria> from being focused automatically when they're created.
   parameters:
     - criteria: a criteria string, use (sway-criteria) to build a one"
-  (sway-dispatch-command
-   (string-append "no_focus " criteria)))
+  (let* ((command (format #f "no_focus ~a" criteria)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-output output subcommands)
+(define* (sway-output output subcommands #:key (exec #t))
   "For details on output subcommands, see sway-output(5).
   parameters:
     - output: name of the output (str)
     - subcommand: list of subcommands (str)"
-  (sway-dispatch-command
-   (string-append "output " output " " subcommands)))
+  (let* ((command (format #f "output ~a ~a" output subcommands)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-POPUP-TYPE-OUTPUTSMART "outputsmart")
 (define SWAY-POPUP-TYPE-IGNORE "ignore")
 (define SWAY-POPUP-TYPE-LEAVE-FULLSCREEN "leave_fullscreen")
 
-(define (sway-popup-during-fullscreen type)
+(define* (sway-popup-during-fullscreen type #:key (exec #t))
   "Determines what to do when a fullscreen view opens a dialog.
   parameters:
     - type: `SWAY-POPUP-TYPE-OUTPUTSMART`, `SWAY-POPUP-TYPE-IGNORE`, `SWAY-POPUP-TYPE-LEAVE-FULLSCREEN`"
-  (sway-dispatch-command
-   (string-append "popup_during_fullscreen " type)))
+  (let* ((command (format #f "popup_during_fullscreen ~a" type)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-PRIMARY-SELECTION-ENABLED "enabled")
 (define SWAY-PRIMARY-SELECTION-DISABLED "disabled")
 
-(define (sway-primary-selection type)
+(define* (sway-primary-selection type #:key (exec #t))
   "Enable or disable the primary selection clipboard. May only be configured at launch. Default is enabled.
   parameters:
     - type: `SWAY-PRIMARY-SELECTION-ENABLED`, `SWAY-PRIMARY-SELECTION-DISABLED`"
-  (sway-dispatch-command
-   (string-append "primary_selection " (cond
-                   ((equal? type #t) SWAY-PRIMARY-SELECTION-ENABLED)
-                   ((equal? type #f) SWAY-PRIMARY-SELECTION-DISABLED)
-                   (else type)))))
+  (let* ((type (cond
+                ((equal? type #t) SWAY-PRIMARY-SELECTION-ENABLED)
+                ((equal? type #f) SWAY-PRIMARY-SELECTION-DISABLED)
+                (else type)))
+         (command (format #f "primary_selection ~a" type)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-SHOW-MARKS-YES "yes")
 (define SWAY-SHOW-MARKS-NO "no")
 
-(define (sway-show-marks flag)
+(define* (sway-show-marks flag #:key (exec #t))
   "If show_marks is yes, marks will be displayed in the window borders.
   parameters:
     - flag: `SWAY-SHOW-MARKS-YES`, `SWAY-SHOW-MARKS-NO`"
-  (sway-dispatch-command
-   (string-append "show_marks " (cond
+  (let* ((flag (cond
                    ((equal? flag #t) SWAY-SHOW-MARKS-YES)
                    ((equal? flag #f) SWAY-SHOW-MARKS-NO)
-                   (else flag)))))
+                   (else flag)))
+         (command (format #f "show_marks ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-OPACITY-SET "set")
 (define SWAY-OPACITY-PLUS "plus")
 (define SWAY-OPACITY-MINUS "minus")
 
-(define (sway-opacity type value)
+(define* (sway-opacity type value #:key (exec #t))
   "Adjusts the opacity of the window between 0 (completely transparent) and 1 (completely opaque)
   parameters:
     - type: `SWAY-OPACITY-SET`, `SWAY-OPACITY-PLUS`, `SWAY-OPACITY-MINUS`
 	- value: opacity value (number) should be between 0 and 1"
-  (sway-dispatch-command
-   (string-append "opacity " type " " (number->string value))))
+  (let* ((command (format #f "opacity ~a ~a" type value)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-TILING-DRAG-ENABLE "enable")
 (define SWAY-TILING-DRAG-DISABLE "disable")
 (define SWAY-TILING-DRAG-TOGGLE "toggle")
 
-(define (sway-tiling-drag flag)
+(define* (sway-tiling-drag flag #:key (exec #t))
   "Sets whether or not tiling containers can be dragged with the mouse.
   parameters:
     - flag: `SWAY-TILING-DRAG-ENABLE`, `SWAY-TILING-DRAG-DISABLE`, `SWAY-TILING-DRAG-TOGGLE`"
-  (sway-dispatch-command
-   (string-append "tiling_drag " (cond
-                   ((equal? flag #t) SWAY-TILING-DRAG-ENABLE)
-                   ((equal? flag #f) SWAY-TILING-DRAG-DISABLE)
-                   (else flag)))))
+  (let* ((flag (cond
+                ((equal? flag #t) SWAY-TILING-DRAG-ENABLE)
+                ((equal? flag #f) SWAY-TILING-DRAG-DISABLE)
+                (else flag)))
+         (command (format #f "tiling_drag ~a" flag)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-tiling-drag-threshold threshold)
+(define* (sway-tiling-drag-threshold threshold #:key (exec #t))
   "Sets whether or not tiling containers can be dragged with the mouse.
   parameters:
     - threshold: threshold value (number)"
-  (sway-dispatch-command
-   (string-append "tiling_drag_threshold " (number->string threshold))))
+  (let* ((command (format #f "tiling_drag_threshold ~a" threshold)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-TILING-ALIGN-LEFT "left")
 (define SWAY-TILING-ALIGN-CENTER "center")
 (define SWAY-TILING-ALIGN-RIGHT "right")
 
-(define (sway-tiling-align type)
+(define* (sway-tiling-align type #:key (exec #t))
   "Sets the title alignment.
   parameters:
     - type: `SWAY-TILING-ALIGN-LEFT`, `SWAY-TILING-ALIGN-CENTER`, `SWAY-TILING-ALIGN-RIGHT`"
-  (sway-dispatch-command
-   (string-append "title_align " type)))
+  (let* ((command (format #f "title_align ~a" type)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-switch-workspace-id id #:key auto-back-and-forth)
+(define* (sway-switch-workspace-id id #:key auto-back-and-forth (exec #t))
   "switch to the workspace with the provided id.
   parameters:
 	- id: workspace id (number)
     - auto-back-and-forth: enable/disable auto back and forth"
-  (sway-dispatch-command
-   (string-append "workspace number "
-                  (unless auto-back-and-forth "--no-auto-back-and-forth ")
-                  (number->string id))))
+  (let* ((back-forth (if auto-back-and-forth "--no-auto-back-and-forth" ""))
+         (command (format #f "workspace number ~a ~a" back-forth id)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define* (sway-switch-workspace workspace #:key auto-back-and-forth)
+(define* (sway-switch-workspace workspace #:key auto-back-and-forth (exec #t))
   "switch to the workspace with the provided name.
   parameters:
 	- workspace: workspace name (str)
     - auto-back-and-forth: enable/disable auto back and forth"
-  (sway-dispatch-command
-   (string-append "workspace "
-                  (unless auto-back-and-forth "--no-auto-back-and-forth ")
-                  workspace)))
+  (let* ((back-forth (if auto-back-and-forth "--no-auto-back-and-forth" ""))
+         (command (format #f "workspace ~a ~a" back-forth workspace)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-switch-workspace-on-output workspace output)
+(define* (sway-switch-workspace-on-output workspace output #:key (exec #t))
   "assigns workspace to output.
   parameters:
 	- workspace: workspace name (str)
     - output: output name"
-  (sway-dispatch-command
-   (string-append "workspace " workspace " output " output)))
+  (let* ((command (format #f "workspace ~a output ~a" workspace output)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES "yes")
 (define SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-NO "no")
 
-(define (sway-workspace-auto-back-and-forth option)
+(define* (sway-workspace-auto-back-and-forth option #:key (exec #t))
   "When yes, repeating a workspace switch command will switch back to the prior workspace.
   parameters:
 	- option: `SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES`, `SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-NO`"
-  (sway-dispatch-command
-   (string-append "workspace_auto_back_and_forth "
-                  (cond
+  (let* ((option (cond
                    ((equal? option #t) SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-YES)
                    ((equal? option #f) SWAY-WORKSPACE-AUTO-BACK-AND-FORTH-OPTION-NO)
-                   (else option)))))
+                   (else option)))
+         (command (format #f "workspace_auto_back_and_forth ~a" option)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
-(define (sway-workspace-gaps workspace option amount)
+(define* (sway-workspace-gaps workspace option amount #:key (exec #t))
   "Specifies that workspace name should have the given gaps settings when it is created.
   This command does not affect existing workspaces. To alter the gaps of an existing workspace,
   use the `sway-gaps` command.
@@ -1495,32 +1602,32 @@ If the units are omitted, floating containers are resized in px and tiled contai
               `SWAY-GAPS-OPTION-VERTICAL`, `SWAY-GAPS-OPTION-TOP`, `SWAY-GAPS-OPTION-RIGHT`,
               `SWAY-GAPS-OPTION-BOTTOM`, `SWAY-GAPS-OPTION-LEFT`
 	- amount: the amount of gap (number)"
-  (sway-dispatch-command
-   (string-append "workspace " workspace option (number->string amount))))
+  (let* ((command (format #f "workspace ~a ~a ~a" workspace option amount)))
+    (if exec (sway-dispatch-command command)
+        command)))
 
 (define* (sway-criteria #:key app-id class con-id con-mark
                         floating id instance pid shell tiling title urgent
-                        window-role window-type workspace)
+                        window-role window-type workspace (exec #t))
   "Generate a string that contains one or more (space separated) attribute/value pairs."
   (string-append
    "["
    (string-join
-    (filter (lambda (x) (> (string-length x) 0))
+    (filter (lambda (x) (and x (> (string-length x) 0)))
             (list
-             (if app-id (string-append "app_id=" app-id) "")
              (if class (string-append "class=" class) "")
-             (if con-id (string-append "con_id=" con-id) "")
+             (if con-id (string-append "con_id=" (number->string con-id)) "")
              (if con-mark (string-append "con_mark=" con-mark) "")
              (if floating (string-append "floating=" floating) "")
-             (if id (string-append "id=" id) "")
+             (if id (string-append "id=" (number->string id)) "")
              (if instance (string-append "instance=" instance) "")
-             (if pid (string-append "pid=" pid) "")
+             (if pid (string-append "pid=" (number->string pid)) "")
              (if shell (string-append "shell=" shell) "")
              (if tiling (string-append "tiling=" tiling) "")
              (if title (string-append "title=" title) "")
              (if urgent (string-append "urgent=" urgent) "")
              (if window-role (string-append "window_role=" window-role) "")
              (if window-type (string-append "window_type=" window-type) "")
-             (if workspace (string-append "workspace=" workspace)) ""))
+             (if workspace (string-append "workspace=" workspace) "")))
     " ")
    "]"))

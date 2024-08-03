@@ -24,6 +24,7 @@
              (ice-9 pretty-print)
              (swayipc))
 
+(sway-connect-sockets!)
 (layout-alternating-configure)
 (layout-alternating-init)
 

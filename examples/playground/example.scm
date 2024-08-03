@@ -25,7 +25,7 @@
              (ice-9 pretty-print)
              (swayipc))
 
-(SWAY-CONNECT-SOCKTES!)
+(sway-connect-sockets!)
 
 ;; get focused workspace from a list of workspaces
 (define (focused-workspace-name workspaces)

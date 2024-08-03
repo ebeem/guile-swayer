@@ -38,11 +38,11 @@
 
             SWAY-SOCKET-PATH
             SWAY-COMMAND-SOCKET
-            SWAY-CONNECT-SOCKETS!
             SWAY-LISTENER-SOCKET
             SWAY-LISTENER-THREAD
             SWAY-MSG-MAGIC
 
+            sway-connect-sockets!
             sway-start-event-listener-thread
             sway-start-event-listener
             sway-data-received-hook
@@ -102,7 +102,7 @@
 ;; to sway via IPC.
 (define SWAY-COMMAND-SOCKET (socket AF_UNIX SOCK_STREAM 0))
 
-(define (SWAY-CONNECT-SOCKETS!)
+(define (sway-connect-sockets!)
   (connect SWAY-LISTENER-SOCKET (make-socket-address AF_UNIX SWAY-SOCKET-PATH))
   (connect SWAY-COMMAND-SOCKET (make-socket-address AF_UNIX SWAY-SOCKET-PATH)))
 

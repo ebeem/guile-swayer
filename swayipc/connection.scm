@@ -38,6 +38,7 @@
 
             SWAY-SOCKET-PATH
             SWAY-COMMAND-SOCKET
+            SWAY-CONNECT-SOCKETS!
             SWAY-LISTENER-SOCKET
             SWAY-LISTENER-THREAD
             SWAY-MSG-MAGIC
@@ -96,12 +97,14 @@
 ;; sway listen socket, this is used to listen to subscribed events
 ;; from sway via IPC.
 (define SWAY-LISTENER-SOCKET (socket AF_UNIX SOCK_STREAM 0))
-(connect SWAY-LISTENER-SOCKET (make-socket-address AF_UNIX SWAY-SOCKET-PATH))
 
 ;; sway command socket, this is used to send commands and queries
 ;; to sway via IPC.
 (define SWAY-COMMAND-SOCKET (socket AF_UNIX SOCK_STREAM 0))
-(connect SWAY-COMMAND-SOCKET (make-socket-address AF_UNIX SWAY-SOCKET-PATH))
+
+(define (SWAY-CONNECT-SOCKETS!)
+  (connect SWAY-LISTENER-SOCKET (make-socket-address AF_UNIX SWAY-SOCKET-PATH))
+  (connect SWAY-COMMAND-SOCKET (make-socket-address AF_UNIX SWAY-SOCKET-PATH)))
 
 ;; Hashtable of mutexes for synchronization, keeps each socket separate.
 ;; This is important to lock sockets while reading/writing.

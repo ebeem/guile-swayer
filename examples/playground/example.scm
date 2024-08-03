@@ -1,4 +1,4 @@
-#!/usr/bin/guile
+#!/usr/bin/env guile
 !#
 
 ;; assuming your are running from a path relative to swaypic & modules
@@ -25,14 +25,15 @@
              (ice-9 pretty-print)
              (swayipc))
 
+(SWAY-CONNECT-SOCKTES!)
 
 ;; get focused workspace from a list of workspaces
 (define (focused-workspace-name workspaces)
   (cond
-    ((null? workspaces) #f)
-    ((equal? #t (sway-workspace-focused (car workspaces)))
-     (sway-workspace-name (car workspaces)))
-    (else (focused-workspace-name (cdr workspaces)))))
+   ((null? workspaces) #f)
+   ((equal? #t (sway-workspace-focused (car workspaces)))
+    (sway-workspace-name (car workspaces)))
+   (else (focused-workspace-name (cdr workspaces)))))
 
 (format #t "output record from function #sway-get-workspaces:\n ~a\n"
         (sway-get-workspaces)) 

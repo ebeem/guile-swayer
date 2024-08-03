@@ -1,4 +1,4 @@
-#!/usr/bin/guile
+#!/usr/bin/env guile
 !#
 
 ;; assuming your are running from a path relative to swaypic & modules

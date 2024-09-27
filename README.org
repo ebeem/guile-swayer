@@ -177,18 +177,18 @@ It's important to know where you clone the repo as you will have to reference it
 |----------------------+--------------------------------------------------------------------------------|
 
 
-1- You can start your =swayipc= configurations from the =REPL=, =terminal=, or a =configuration file=.
+1- You can start your =guile-swayer= configurations from the =REPL=, =terminal=, or a =configuration file=.
 Remember: for debugging or displaying output, it's best to run Guile from the =REPL= or =terminal=. You can also pipe the output to a file if you desire.
 
 #+begin_src conf 
-# good idea to kill all current guile swayipc instances first
+# good idea to kill all current guile guile-swayer instances first
 exec_always "pkill -f '.*guile.*sway/init.scm'"
 
 # then run a fresh instance, sleeping ensures a more reilable execution
 exec_always "sleep 0.5 && ~/.config/sway/init.scm"
 #+end_src
 
-2- I plan to publish a module for =guile-swayer=, it's currently not hosted anywhere. You'll need to add the module to your =load path=. Additionally, =swayipc= includes another patched Guile library called =guile-json=, which is embedded for now. In the future, this will be included as a separate dependency rather than embedded.
+2- I plan to publish a module for =guile-swayer=, it's currently not hosted anywhere. You'll need to add the module to your =load path=. Additionally, =guile-swayer= includes another patched Guile library called =guile-json=, which is embedded for now. In the future, this will be included as a separate dependency rather than embedded.
 
 #+begin_src scheme
 (add-to-load-path

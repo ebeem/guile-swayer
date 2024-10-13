@@ -42,10 +42,10 @@
             SWAY-GAPS-OPTION-LEFT
             SWAY-GAPS-WORKSPACE-ALL
             SWAY-GAPS-WORKSPACE-CURRENT
-            SWAY-GAPS-WORKSPACE-SET
-            SWAY-GAPS-WORKSPACE-PLUS
-            SWAY-GAPS-WORKSPACE-MINUS
-            SWAY-GAPS-WORKSPACE-TOGGLE
+            SWAY-GAPS-TYPE-SET
+            SWAY-GAPS-TYPE-PLUS
+            SWAY-GAPS-TYPE-MINUS
+            SWAY-GAPS-TYPE-TOGGLE
             SWAY-MOUSE-WARPING-OUTPUT
             SWAY-MOUSE-WARPING-CONTAINER
             SWAY-MOUSE-WARPING-NONE
@@ -498,21 +498,23 @@ Response:
 
 (define SWAY-GAPS-WORKSPACE-ALL "all")
 (define SWAY-GAPS-WORKSPACE-CURRENT "current")
-(define SWAY-GAPS-WORKSPACE-SET "set")
-(define SWAY-GAPS-WORKSPACE-PLUS "plus")
-(define SWAY-GAPS-WORKSPACE-MINUS "minus")
-(define SWAY-GAPS-WORKSPACE-TOGGLE "toggle")
 
-(define* (sway-gaps option workspace amount #:key (exec #t))
+(define SWAY-GAPS-TYPE-SET "set")
+(define SWAY-GAPS-TYPE-PLUS "plus")
+(define SWAY-GAPS-TYPE-MINUS "minus")
+(define SWAY-GAPS-TYPE-TOGGLE "toggle")
+
+(define* (sway-gaps option workspace type amount #:key (exec #t))
   "Changes the inner or outer gaps for either all workspaces or the current workspace.
   parameters:
     - option: `SWAY-GAPS-OPTION-INNER`, `SWAY-GAPS-OPTION-OUTER`, `SWAY-GAPS-OPTION-HORIZONTAL`,
               `SWAY-GAPS-OPTION-VERTICAL`, `SWAY-GAPS-OPTION-TOP`, `SWAY-GAPS-OPTION-RIGHT`,
               `SWAY-GAPS-OPTION-BOTTOM`, `SWAY-GAPS-OPTION-LEFT`
-    - workspace: `SWAY-GAPS-WORKSPACE-ALL`, `SWAY-GAPS-WORKSPACE-CURRENT`, `SWAY-GAPS-WORKSPACE-SET`,
-                 `SWAY-GAPS-WORKSPACE-PLUS`, `SWAY-GAPS-WORKSPACE-MINUS`, `SWAY-GAPS-WORKSPACE-TOGGLE`
+    - workspace: `SWAY-GAPS-WORKSPACE-ALL`, `SWAY-GAPS-WORKSPACE-CURRENT`
+    - type: `SWAY-GAPS-TYPE-SET`, `SWAY-GAPS-TYPE-PLUS`,
+			`SWAY-GAPS-TYPE-MINUS`, `SWAY-GAPS-TYPE-TOGGLE`
     - amount: amount of gap (number)"
-  (let* ((command (format #f "gaps ~a ~a ~a" option workspace amount)))
+  (let* ((command (format #f "gaps ~a ~a ~a ~a" option workspace type amount)))
     (if exec (sway-dispatch-command command)
         command)))
 

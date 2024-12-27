@@ -37,13 +37,16 @@
             sway-output-model
             sway-output-serial
             sway-output-active
+            sway-output-power
             sway-output-primary
+            sway-output-focused
             sway-output-scale
             sway-output-subpixel-hinting
             sway-output-transform
             sway-output-current-workspace
             sway-output-modes
             sway-output-current-mode
+            sway-output-rect
 
             <sway-window-property>
             scm->sway-window-property
@@ -299,13 +302,16 @@
   (model)
   (serial)
   (active)
+  (power)
   (primary)
+  (focused)
   (scale)
   (subpixel-hinting "subpixel_hinting")
   (transform)
   (current-workspace "current_workspace")
   (modes "modes" #(<sway-mode>))
-  (current-mode "current_mode" <sway-mode>))
+  (current-mode "current_mode" <sway-mode>)
+  (rect "rect" <sway-rect>))
 
 (define-json-type <sway-window-property>
   (class)

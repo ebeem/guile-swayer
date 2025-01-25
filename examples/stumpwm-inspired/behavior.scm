@@ -1,4 +1,4 @@
-(use-modules (swayipc))
+(use-modules (guile-swayer swayipc))
 
 (sway-output "HDMI-A-2" "pos 0 0 res 1920x1080")
 (sway-output "DP-1" "pos 1920 0 res 1920x1080")

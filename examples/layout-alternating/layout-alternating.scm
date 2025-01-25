@@ -7,8 +7,8 @@
 ;; these 2 directories exist in the root directory of the repostiry and are
 ;; supposed to be 2 parent levels away from this init file.
 (let ((path (dirname
-             (dirname
-              (dirname (current-filename))))))
+              (dirname
+               (dirname (current-filename))))))
   (format #t "adding folder to load path ~a\n" path)
   (add-to-load-path path))
 
@@ -20,9 +20,9 @@
 
 (use-modules (oop goops)
              (srfi srfi-18)
-             (modules layout-alternating)
+             (guile-swayer modules layout-alternating)
              (ice-9 pretty-print)
-             (swayipc))
+             (guile-swayer swayipc))
 
 (sway-connect-sockets!)
 (layout-alternating-configure)

@@ -1,0 +1,14 @@
+/autom4te.cache
+/build-aux/
+
+/aclocal.m4
+/config.log
+/config.status
+/configure
+/env
+
+Makefile
+Makefile.in
+*.go
+*.log
+*.trs

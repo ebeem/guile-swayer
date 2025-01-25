@@ -2,10 +2,8 @@
 
 ;;; Code:
 
-(define-module (sjson)
-  #:use-module (sjson builder)
-  #:use-module (sjson parser)
-  #:use-module (sjson record))
+(define-module (guile-swayer libs)
+  #:use-module (guile-swayer libs sway-tree-helper))
 
 (define-syntax re-export-modules
   (syntax-rules ()
@@ -15,8 +13,6 @@
                     (resolve-interface '(mod ...)))
        ...))))
 
-(re-export-modules (sjson builder)
-                   (sjson parser)
-                   (sjson record))
+(re-export-modules (guile-swayer libs sway-tree-helper))
 
-;;; (sjson) ends here
+;;; (modules) ends here

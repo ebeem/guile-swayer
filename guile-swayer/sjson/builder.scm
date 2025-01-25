@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(define-module (sjson builder)
+(define-module (guile-swayer sjson builder)
   #:use-module (ice-9 format)
   #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)

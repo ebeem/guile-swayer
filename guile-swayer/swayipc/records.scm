@@ -1,6 +1,6 @@
-(define-module (swayipc records)
+(define-module (guile-swayer swayipc records)
   #:use-module (oop goops)
-  #:use-module (sjson)
+  #:use-module (guile-swayer sjson)
 
   #:export (<sway-rect>
             scm->sway-rect

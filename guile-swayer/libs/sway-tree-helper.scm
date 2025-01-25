@@ -1,8 +1,8 @@
 ;; This is a helper library that provides functions to simplify
 ;; dealing with a sway tree record
 
-(define-module (libs sway-tree-helper)
-  #:use-module (swayipc)
+(define-module (guile-swayer libs sway-tree-helper)
+  #:use-module (guile-swayer swayipc)
 
   #:export (sway-tree-node-parent
             sway-tree-node-workspace

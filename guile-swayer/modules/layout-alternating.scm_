@@ -1,0 +1,238 @@
+;; use example:
+;; TODO
+
+(define-module (modules layout-alternating)
+  #:use-module (swayipc)
+  #:use-module (libs sway-tree-helper)
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 pretty-print)
+  #:use-module (oop goops)
+
+  #:export (layout-alternating-init
+            layout-alternating-configure))
+
+;; whether first split (first 2 nodes) should be
+;; vertical `SWAY-LAYOUT-SPLITV` or horizontal `SWAY-LAYOUT-SPLITH`
+;; the default value is vertical
+(define layout-alternating-first-split SWAY-LAYOUT-SPLITH)
+
+(define* (layout-alternating-configure)
+  "Configure alternating tiling.
+Parameters:
+	- empty-window-command: the command that spawns an empty transparent window.")
+
+(define (window-changed window-event)
+  "Triggered when window has changed. This function processes the tree
+to apply alternating tiling like experience."
+  (let* ((tree (sway-get-tree)))
+    ;; (display "window changed\n")
+
+    ;; remove nested containers in the workspace
+    (sway-tree-nodes-optimize
+     (sway-tree-node-workspace (sway-tree-node-focused)))
+
+    ;; update layout of current workspace only
+    ;; the tree of the current workspace is passed for the update-layout
+    ;; function so it gets processed and updated based on the layout definition
+    (update-layout (sway-tree-node-workspace (sway-tree-node-focused)))
+
+    ;; remove nested containers in the workspace
+    (sway-tree-nodes-optimize
+     (sway-tree-node-workspace (sway-tree-node-focused)))))
+
+(define (layout-alternating-init)
+  "Initialize the alternating tiling module."
+  (add-hook! sway-window-hook window-changed))
+
+(define (update-layout node)
+  (format #t "update a top level layout ~a\n" (sway-tree-id node))
+  (let* ((type (sway-tree-type node))
+         (id (sway-tree-id node))
+         (children (sway-tree-nodes node))
+         (layout (sway-tree-layout node))
+         (width (sway-rect-width (sway-tree-window-rect node)))
+         (height (sway-rect-height (sway-tree-window-rect node)))
+         (expected-layout (cond
+                           ((equal? type "workspace") layout-alternating-first-split)
+                           ((> width height) SWAY-LAYOUT-SPLITH)
+                           (else SWAY-LAYOUT-SPLITV))))
+    (unless (equal? layout expected-layout)
+      (format #t "layout of ~a (~a) doesn't match expected layout (~a), dispatching ..\n"
+              id layout expected-layout)
+
+      ;; applying split on first child so it's applied on parent
+      (sway-dispatch-command
+       (format #f "~a ~a"
+               (sway-criteria #:con-id (sway-tree-id (car children)))
+               (sway-layout expected-layout #:exec #f))))
+
+    (let* ((left-node (car children))
+           (right-node (and (> (length children) 1) (car (cdr children))))
+           (other-nodes (and (> (length children) 2) (cdr (cdr children)))))
+
+      ;; if children are more than 2, then we have to fix the layout
+      ;; all the children except the first one should be combined under
+      ;; one container. if we have exactly 2 children, we still need to
+      ;; ensure that the container layout is valid (vertical/horizontal)
+
+      ;; if right-node isn't a container, create a container for it
+      (when right-node
+        (update-right-node right-node))
+
+      ;; other nodes should become children of right-node's container
+      (when other-nodes
+        (map (lambda (n)
+                (begin
+                  (format #t "moving extra child ~a > ~a to sibling of ~a\n"
+                          id (sway-tree-id n) (sway-tree-id right-node))
+                  (sway-tree-move-node n right-node)))
+              other-nodes))
+
+      ;; count of children should be less or equal 2
+      ;; first child would be a single application
+      ;; or a container that's either tabbed or stacked
+      (when left-node
+        (update-left-node left-node node))
+
+      ;; continue updating layout for the new right node
+      (if right-node
+          (update-layout right-node)))))
+
+(define (update-left-node node parent)
+  ;; (format #t "update-left-node ~a > ~a\n"
+  ;;         (sway-tree-id parent) (sway-tree-id node))
+  ;; container layout should be stacked or tabbed
+  ;; or the container should be an application
+  (unless (or (member (sway-tree-layout node) '("stacked" "tabbed"))
+              (sway-tree-app-id node))
+    ;; if that's not the case, we should fix the layout by removing
+    ;; all sub containers and keeping only first application
+    ;; the other application containers should move to the parent
+    ;; (format #t "getting children of ~a\n" (sway-tree-id node))
+    (let* ((children (sway-tree-app-nodes node))
+           (target-node (last (sway-tree-nodes parent))))
+      ;; skip first child, we would like to keep it as is
+      ;; (sway-tree-move-node (car children) node)
+      ;; (format #t "got children of ~a\n" children)
+
+      ;; the other children should become now siblings of parent
+      ;; they will be fixed later, but an app layout should only have one
+      ;; application if it's not stacked or tabbed
+      (map (lambda (n) (sway-tree-move-node n target-node))
+            (cdr children)))))
+
+(define (update-right-node node)
+  (format #t "updating right node container ~a\n" (sway-tree-id node))
+  ;; container layout should be vertical or horizontal
+  ;; the container shouldn't be an application
+  (unless (member (sway-tree-layout node) `(,SWAY-LAYOUT-SPLITH ,SWAY-LAYOUT-SPLITV))
+          (format #t "right node ~a is not a valid container, dispatching ..\n" (sway-tree-id node))
+          (sway-dispatch-command
+           (format #f "~a ~a"
+                   (sway-criteria #:con-id (sway-tree-id node))
+                   (sway-split-container (if (> (sway-rect-width (sway-tree-window-rect node))
+                                                (sway-rect-height (sway-tree-window-rect node)))
+                                             SWAY-SPLIT-HORIZONTAL
+                                             SWAY-SPLIT-VERTICAL) #:exec #f)))))
+
+    ;;   (map (lambda (n) (update-layout n node))
+    ;;         (sway-tree-nodes node)))
+    ;; (sway-tree-remove-children-layouts node)))
+
+;; (define* (update-layout node #:optional parent)
+;;   "Update sway layout, called when window change event is triggered
+;; The logic is to simply execute a split command if parent is not splitted
+;; horizontally or vertically. The split will be decided based on which dimension
+;; is larger (height vs width)"
+;;   (let* ((type (sway-tree-type node))
+;;          (app-id (sway-tree-app-id node))
+;;          (layout (sway-tree-layout node))
+;;          (parent-layout (and parent (sway-tree-layout parent)))
+;;          (width (sway-rect-width (sway-tree-window-rect node)))
+;;          (height (sway-rect-height (sway-tree-window-rect node)))
+;;          (expected-layout (if (> width height)
+;;                               SWAY-SPLIT-HORIZONTAL
+;;                               SWAY-SPLIT-VERTICAL))
+;;          (expected-layout-code (if (> width height)
+;;                                    SWAY-LAYOUT-SPLITH
+;;                                    SWAY-LAYOUT-SPLITV)))
+
+;;     ;; ignore floating, stacked, and tabbed layouts
+;;     (cond
+;;      ;; case #1, parent is null
+;;      ((null? parent)
+;;       (begin
+;;         ;; the container should be of type `layout-alternating-first-split`
+;;         ;; if that's not the case, we should fix the layout
+;;         (unless (equal? layout layout-alternating-first-split)
+;;           (sway-dispatch-command
+;;            (format #f "~a ~a"
+;;                    (sway-criteria #:con-id (sway-tree-id node))
+;;                    (sway-split-container (if (null? parent)
+;;                                              layout-alternating-first-split
+;;                                              expected-layout) #:exec #f))))
+
+;;         ;; continue updating the rest of the children
+;;         (map (lambda (n) (update-layout n node))
+;;              (sway-tree-nodes node))))
+
+;;      ;; case #2, vertical or horizontal parent layout container
+;;      ;; and container is stacked or tabbed layout
+;;      ((and (member parent-layout '("vertical" "horizontal"))
+;;            (member layout '("stacked" "tabbed")))
+;;       (begin
+;;         ;; the children should probably be flat, no nested containers
+;;         ;; if that's not the case, we should fix the layout them
+;;         (sway-tree-remove-children-layouts node)))
+
+;;      ;; case #3, vertical or horizontal parent layout container
+;;      ;; and container is vertical or horizontal layout
+;;      ((and (member parent-layout '("vertical" "horizontal"))
+;;            (member layout '("vertical" "horizontal")))
+;;       (begin
+;;         ;; TODO: the children should probably be flat, no nested containers
+;;         ;; TODO: if that's not the case, we should fix the layout them
+
+;; 		;; continue updating the rest of the children
+;;         (map (lambda (n) (update-layout n node))
+;;              (sway-tree-nodes node))
+;;         ))
+
+;;     (unless (or (equal? type "floating_con")
+;;                 (member parent-layout '("stacked" "tabbed")))
+;;       ;; expected layout behavior is having 2 children only
+;;       ;; one of the children should be anything but a vertical/horizontal container
+;;       ;; the other one should be a vertical/horizontal container
+;;       (sway-dispatch-command
+;;        (format #f "~a ~a"
+;;                (sway-criteria #:con-id (sway-tree-id node))
+;;                (sway-split-container (if (null? parent)
+;;                                          layout-alternating-first-split
+;;                                          expected-layout) #:exec #f))))
+
+;;     (map (lambda (n) (update-layout n node))
+;;          (sway-tree-nodes node)))))
+
+;; (define (update-layout-node node)
+;;   "Update sway layout, called when window change event is triggered
+;; The logic is to simply execute a split command if parent is not splitted
+;; horizontally or vertically. The split will be decided based on which dimension
+;; is larger (height vs width)"
+;;   (let* ((type (sway-tree-type node))
+;;          (fullscreen (equal? (sway-tree-fullscreen-mode node) 1))
+;;          (parent (sway-tree-node-parent node))
+;;          (parent-layout (and parent (sway-tree-layout parent)))
+;;          (width (sway-rect-width (sway-tree-window-rect node)))
+;;          (height (sway-rect-height (sway-tree-window-rect node)))
+;;          (expected-layout (if (> width height)
+;;                               SWAY-SPLIT-HORIZONTAL
+;;                               SWAY-SPLIT-VERTICAL)))
+
+;;       ;; ignore floating, stacked, and tabbed layouts
+;;     (unless (or fullscreen
+;;                 (equal? type "floating_con")
+;;                 (member parent-layout '("stacked" "tabbed")))
+;;       (display "splitting container\n")
+;;       (sway-split-container (if (> width height)
+;;                                 SWAY-SPLIT-HORIZONTAL
+;;                                 SWAY-SPLIT-VERTICAL)))))

@@ -1,8 +1,8 @@
-(define-module (swayipc info)
-  #:use-module (swayipc connection)
-  #:use-module (swayipc records)
+(define-module (guile-swayer swayipc info)
+  #:use-module (guile-swayer swayipc connection)
+  #:use-module (guile-swayer swayipc records)
   #:use-module (oop goops)
-  #:use-module (sjson)
+  #:use-module (guile-swayer sjson)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-1)
 

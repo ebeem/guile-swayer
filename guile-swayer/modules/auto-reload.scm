@@ -11,8 +11,8 @@
 ;; (auto-reload-configure #:directories '("/home/ebeem/.config/sway/"))
 ;; (auto-reload-init)
 
-(define-module (modules auto-reload)
-  #:use-module (swayipc)
+(define-module (guile-swayer modules auto-reload)
+  #:use-module (guile-swayer swayipc)
   #:use-module (system foreign)
   #:use-module (system foreign-library)
   #:use-module (srfi srfi-1)

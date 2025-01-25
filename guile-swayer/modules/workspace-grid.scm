@@ -6,8 +6,8 @@
 ;;                             ("ws-o3-1" "ws-o3-2" "ws-o3-3" "ws-o3-4")))
 ;; (workspace-grid-init)
 
-(define-module (modules workspace-grid)
-  #:use-module (swayipc)
+(define-module (guile-swayer modules workspace-grid)
+  #:use-module (guile-swayer swayipc)
 
   #:export (workspace-grid-workspaces
             workspace-grid-columns
@@ -54,7 +54,7 @@ This means 3x2x2= 12 workspaces should be provided.
   "Return name of active workspace."
   (cond
    ((null? workspaces) #f)
-   ((equal? (sway-workspace-focused (car workspaces)) #t)
+   ((eq? (sway-workspace-focused (car workspaces)) #t)
     (sway-workspace-name (car workspaces)))
    (else (get-active-workspace-name (cdr workspaces)))))
 

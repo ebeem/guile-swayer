@@ -25,6 +25,19 @@ The =examples/playground/example.scm= file will:
 guile ./examples/playground/example.scm
 #+end_src
 
+** Installation
+
+All the examples included in this project reference the =guile-swayer= package relatively for ease of testing. To make =guile-swayer= package publicly visible to guile, it must be added to the =GUILE_LOAD_PATH= which should be =/usr/local/share/guile/site/3.0= for =guile-3=
+
+If you use =GUIX=, you can simply install =guile-swayer= from the =GUIX= repository (thanks to @wrest64 [Alec Barreto]). If you are using another distro, you will have to ensure =GUILE_LOAD_PATH= points to correct path and execute the below commands to install =guile-swayer=
+
+#+begin_src bash
+  autoreconf -i
+  ./configure
+  make
+  sudo make install
+#+end_src
+
 ** Quick Overview
 
 *** Query Sway

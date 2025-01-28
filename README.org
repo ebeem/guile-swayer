@@ -166,7 +166,17 @@ It's important to know where you clone the repo as you will have to reference it
 | README.org | This readme file                                                    |
 |------------+---------------------------------------------------------------------|
 
-**** swayipc Directory
+**** guile-swayer Directory
+
+|------------+---------------------------------------------------------------------|
+| File       | Description                                                         |
+|------------+---------------------------------------------------------------------|
+| libs       | Helpful libraries to help =modules= perform command sway =tasks=        |
+| modules    | Directory containing modules for extending Sway using =guile-swayer=. |
+| sjson      | A patched version of =guile-json= (temporarily).                      |
+| swayipc    | Directory containing the core code for =swayipc=.                     |
+|------------+---------------------------------------------------------------------|
+**** guile-swayer/swayipc Directory
 |------------+-----------------------------------------------------------------------------|
 | File       | Description                                                                 |
 |------------+-----------------------------------------------------------------------------|
@@ -177,7 +187,7 @@ It's important to know where you clone the repo as you will have to reference it
 | records    | Provides =Guile records= representing Sway's data structures.                 |
 |------------+-----------------------------------------------------------------------------|
 
-**** Modules Directory
+**** guile-swayer/modules Directory
 |----------------------+--------------------------------------------------------------------------------|
 | File                 | Description                                                                    |
 |----------------------+--------------------------------------------------------------------------------|

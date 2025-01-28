@@ -19,13 +19,15 @@
 
 (use-modules (oop goops)
              (srfi srfi-18)
-             (guile-swayer modules layout-alternating)
+             (guile-swayer modules layout-manual)
              (ice-9 pretty-print)
              (guile-swayer swayipc))
 
 (sway-connect-sockets!)
-(layout-alternating-configure)
-(layout-alternating-init)
+
+(layout-manual-configure
+ #:empty-window-command "~/dotfiles/.config/sway/empty-window.py")
+(layout-manual-init)
 
 ;; subscribe to all events
 (sway-subscribe-all)

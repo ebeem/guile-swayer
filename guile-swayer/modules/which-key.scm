@@ -1,6 +1,6 @@
-(define-module (modules which-key)
-  #:use-module (swayipc)
-  #:use-module (modules general)
+(define-module (guile-swayer modules which-key)
+  #:use-module (guile-swayer swayipc)
+  #:use-module (guile-swayer modules general)
   #:use-module (ice-9 hash-table)
   #:use-module (srfi srfi-18)
   #:export (which-key-init

@@ -1,6 +1,6 @@
-(define-module (swayipc events)
-  #:use-module (swayipc connection)
-  #:use-module (swayipc records)
+(define-module (guile-swayer swayipc events)
+  #:use-module (guile-swayer swayipc connection)
+  #:use-module (guile-swayer swayipc records)
 
   #:export (sway-subscribe-event
             sway-subscribe-workspace-change

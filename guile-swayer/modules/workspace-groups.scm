@@ -6,8 +6,8 @@
 ;;              ("dp-1-programming" "dp-2-programming")))
 ;; (workspace-groups-init)
 
-(define-module (modules workspace-groups)
-  #:use-module (swayipc)
+(define-module (guile-swayer modules workspace-groups)
+  #:use-module (guile-swayer swayipc)
 
   #:export (workspace-groups-init
             workspace-groups-configure

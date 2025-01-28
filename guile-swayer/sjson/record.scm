@@ -27,9 +27,9 @@
 
 ;;; Code:
 
-(define-module (sjson record)
-  #:use-module (sjson builder)
-  #:use-module (sjson parser)
+(define-module (guile-swayer sjson record)
+  #:use-module (guile-swayer sjson builder)
+  #:use-module (guile-swayer sjson parser)
   #:use-module (srfi srfi-9)
   #:export (<=> define-json-mapping define-json-type))
 

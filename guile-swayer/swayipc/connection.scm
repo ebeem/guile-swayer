@@ -1,4 +1,4 @@
-(define-module (swayipc connection)
+(define-module (guile-swayer swayipc connection)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 binary-ports)
   #:use-module (ice-9 hash-table)

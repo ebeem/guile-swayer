@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-(define-module (sjson parser)
+(define-module (guile-swayer sjson parser)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 streams)
   #:use-module (rnrs io ports)

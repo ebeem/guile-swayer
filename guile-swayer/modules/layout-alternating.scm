@@ -1,9 +1,9 @@
 ;; use example:
 ;; TODO
 
-(define-module (modules layout-alternating)
-  #:use-module (swayipc)
-  #:use-module (libs sway-tree-helper)
+(define-module (guile-swayer modules layout-alternating)
+  #:use-module (guile-swayer swayipc)
+  #:use-module (guile-swayer libs sway-tree-helper)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 pretty-print)
   #:use-module (oop goops)

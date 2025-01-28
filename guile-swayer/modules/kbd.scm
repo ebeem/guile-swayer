@@ -1,4 +1,4 @@
-(define-module (modules kbd)
+(define-module (guile-swayer modules kbd)
   #:use-module (ice-9 hash-table)
   #:export (kbd-init
             kbd-define-keysym

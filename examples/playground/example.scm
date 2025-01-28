@@ -1,29 +1,28 @@
 #!/usr/bin/env guile
 !#
 
-;; assuming your are running from a path relative to swaypic & modules
-;; you can hardcode the load path here if that assumption isn't valid.
-;; you have to add to load path the directory the contains modules and swayipc
-;; these 2 directories exist in the root directory of the repostiry and are
-;; supposed to be 2 parent levels away from this init file.
+;; the below snippet assumes your are running the script
+;; from a path relative to guile-swayer. In case you're not,
+;; you have to add guile-swayer's directory to your load path
+;; the below is adding guile-swayer by going to parent directory twice.
 (let ((path (dirname
-             (dirname
-              (dirname (current-filename))))))
+              (dirname
+               (dirname (current-filename))))))
   (format #t "adding folder to load path ~a\n" path)
   (add-to-load-path path))
 
-;; you can simply uncomment the above section and hardcode the path as below
+;; you can simply comment the above section and hardcode the path as below
 ;; (add-to-load-path "/home/YOUR_USER_HERE/git/guile-swayer")
 
 ;; if you would like to be relative to home, do as below 
-;; (string-append (getenv "HOME") "/.config/sway/init.scm")
+;; (string-append (getenv "HOME") "/git/guile-swayer")
 
 (use-modules (oop goops)
              (srfi srfi-18)
-             (modules workspace-groups)
-             (modules workspace-grid)
+             (guile-swayer modules workspace-groups)
+             (guile-swayer modules workspace-grid)
              (ice-9 pretty-print)
-             (swayipc))
+             (guile-swayer swayipc))
 
 (sway-connect-sockets!)
 

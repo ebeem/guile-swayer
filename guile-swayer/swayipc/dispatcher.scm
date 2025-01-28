@@ -1,9 +1,9 @@
-(define-module (swayipc dispatcher)
-  #:use-module (swayipc connection)
-  #:use-module (swayipc records)
+(define-module (guile-swayer swayipc dispatcher)
+  #:use-module (guile-swayer swayipc connection)
+  #:use-module (guile-swayer swayipc records)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-1)
-  #:use-module (sjson)
+  #:use-module (guile-swayer sjson)
 
   #:export (SWAY-ORIENTATION-HORIZONTAL
             SWAY-ORIENTATION-VERTICAL

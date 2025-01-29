@@ -18,8 +18,11 @@
                     (resolve-interface '(mod ...)))
        ...))))
 
-(re-export-modules (guile-swayer modules builder)
-                   (guile-swayer modules parser)
-                   (guile-swayer modules record))
+(re-export-modules (guile-swayer modules auto-reload)
+                   (guile-swayer modules general)
+                   (guile-swayer modules kbd)
+                   (guile-swayer modules which-key)
+                   (guile-swayer modules workspace-grid)
+                   (guile-swayer modules workspace-groups))
 
 ;;; (modules) ends here

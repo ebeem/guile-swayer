@@ -122,7 +122,11 @@ Parameters:
   (let* ((chord-ls (map general-keybinding-translator
                         (string-split chord #\Space)))
          (key (car (last-pair chord-ls)))
-         (type (if (string->number (last-key key)) "bindcode" "bindsym"))
+         (type (let ((k (last-key key)))
+                 (if (and (string->number k)
+                          (> (string->number k) 9))
+                     "bindcode"
+                     "bindsym")))
          (command (string-append type " " key " " (general-command (exp->string exp))))
          (esc (string-append type " " key " " (general-command (exp->string `(and ,exp (sway-mode "default")))))))
 

@@ -1451,12 +1451,113 @@ windows and then jump to them at a later time.
     (if exec (sway-dispatch-command command)
         command)))
 
-(define* (sway-output output subcommands #:key (exec #t))
+(define SWAY-OUTPUT-SCALE-FILTER-LINEAR "linear")
+(define SWAY-OUTPUT-SCALE-FILTER-NEAREST "nearest")
+
+(define SWAY-OUTPUT-SUBPIXEL-RGB "rgb")
+(define SWAY-OUTPUT-SUBPIXEL-BGR "bgr")
+(define SWAY-OUTPUT-SUBPIXEL-VRGB "vrgb")
+(define SWAY-OUTPUT-SUBPIXEL-VBGR "vbgr")
+(define SWAY-OUTPUT-SUBPIXEL-NONE "none")
+
+(define SWAY-OUTPUT-BACKGROUND-MODE-STRETCH "stretch")
+(define SWAY-OUTPUT-BACKGROUND-MODE-FILL "fill")
+(define SWAY-OUTPUT-BACKGROUND-MODE-FIT "fit")
+(define SWAY-OUTPUT-BACKGROUND-MODE-CENTER "center")
+(define SWAY-OUTPUT-BACKGROUND-MODE-TILE "tile")
+
+           ;; "90",   "180",  "270"  for  rotation;  or  "flipped",  "flipped-90",
+;; "flipped-180", "flipped-270" to apply a rotation and flip, or  "nor‐
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-NORAML "normal")
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-90 "90")
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-180 "180")
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-270 "270")
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED "flipped")
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED-90 "flipped-90")
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED-180 "flipped-180")
+(define SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED-270 "flipped-270")
+
+(define SWAY-OUTPUT-TRANSFORM-DIRECTION-CLOCKWISE "clockwise")
+(define SWAY-OUTPUT-TRANSFORM-DIRECTION-ANTICLOCKWISE "anticlockwise")
+
+;; (define* (sway-output output subcommands #:key (exec #t))
+;;   "For details on output subcommands, see sway-output(5).
+;;   parameters:
+;;     - output: name of the output (str)
+;;     - subcommand: list of subcommands (str)"
+;;   (let* ((command (format #f "output ~a ~a" output subcommands)))
+;;     (if exec (sway-dispatch-command command)
+;;         command)))
+
+(define* (sway-output output
+                      #:optional subcommands
+                      #:key position resolution refresh-rate
+                      scale scale-filter subpixel background
+                      (background-mode SWAY-OUTPUT-BACKGROUND-MODE-FILL)
+                      (background-color "#000000")
+                      transform-rotation
+                      (transform-direction SWAY-OUTPUT-TRANSFORM-DIRECTION-CLOCKWISE)
+                      (enable "ignore") (power "ignore") toggle max-render-time
+                      (adaptive-sync "ignore") render-bit-depth color-profile
+                      (allow-tearing "ignore") (exec #t))
   "For details on output subcommands, see sway-output(5).
   parameters:
     - output: name of the output (str)
-    - subcommand: list of subcommands (str)"
-  (let* ((command (format #f "output ~a ~a" output subcommands)))
+    - position: Places the specified output at the specific position in the global coordinate space (list x, y)
+    - resolution: width and height (in pixels) configured for the display.
+	- refresh-rate: the refresh rate of the display
+    - output: name of the output (str)
+    - scale: scales the specified output by the a scale factor (float)
+    - scale-filter: indicates how to scale application buffers
+                    value can be `SWAY-OUTPUT-SCALE-FILTER-LINEAR`,
+					`SWAY-OUTPUT-SCALE-FILTER-NEAREST`, `SWAY-OUTPUT-SCALE-FILTER-SMART`
+    - subpixel: manually sets the subpixel hinting
+                value can be `SWAY-OUTPUT-SUBPIXEL-RGB`, `SWAY-OUTPUT-SUBPIXEL-BGR`
+				`SWAY-OUTPUT-SUBPIXEL-VRGB`, `SWAY-OUTPUT-SUBPIXEL-VBGR`
+				`SWAY-OUTPUT-SUBPIXEL-NONE`
+    - background: sets the wallpaper
+	- background-mode: the way wallpaper is scaled
+					   values can be `SWAY-OUTPUT-BACKGROUND-MODE-STRETCH`, `SWAY-OUTPUT-BACKGROUND-MODE-FILL`,
+					   `SWAY-OUTPUT-BACKGROUND-MODE-FIT`, `SWAY-OUTPUT-BACKGROUND-MODE-CENTER`,
+					   `SWAY-OUTPUT-BACKGROUND-MODE-TILE`
+	- background-color: the color of the background in case the wallpaper is not visible (string)
+    - transform-rotation: sets the background transform to a given direction value
+                           values can be `SWAY-OUTPUT-TRANSFORM-ROTATION-NORAML`, `SWAY-OUTPUT-TRANSFORM-ROTATION-90`,
+						   `SWAY-OUTPUT-TRANSFORM-ROTATION-180`, `SWAY-OUTPUT-TRANSFORM-ROTATION-270`,
+						   `SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED`, `SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED-90`,
+						   `SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED-180`, `SWAY-OUTPUT-TRANSFORM-ROTATION-FLIPPED-270`.
+    - transform-direction: sets the background transform direction to a given direction value
+                           values can be `SWAY-OUTPUT-TRANSFORM-DIRECTION-CLOCKWISE`, `SWAY-OUTPUT-TRANSFORM-DIRECTION-ANTICLOCKWISE`.
+    - enable: enables or disables output and lose its workspace and windows (bool)
+    - power: turns on or off output but keeps its workspace and windows (bool)
+    - max-render-time: milliseconds before the next display refresh (int)
+    - adaptive-sync: allows clients to submit frames without waiting for refresh (bool)
+    - render-bit-depth: Controls the maximum color channel bit depth  at  which  frames  are (6|8|10)
+    - allow-tearing: allows screen tearing as a result of immediate page flips (bool)
+    - subcommand: list of subcommands in case the to add to the output, refer to sway-output manual page (str)"
+  (let* ((configs
+          (string-join
+           (filter
+            (lambda (x) (and x (> (string-length x) 0)))
+            (list
+             (if position (format #f "pos ~a ~a" (car position) (car (cdr position))) "")
+             (if resolution (format #f "res ~ax~a~a"
+                                    (car resolution)
+                                    (car (cdr resolution))
+                                    (if refresh-rate (format #f "@~aHz" refresh-rate) "")) "")
+             (if scale (format #f "scale ~a" scale) "")
+             (if scale-filter (format #f "scale_filter ~a" scale-filter) "")
+             (if subpixel (format #f "subpixel ~a" subpixel) "")
+             (if background (format #f "background \"~a\" ~a ~a" background background-mode background-color) "")
+             (if (and (not background) background-color) (format #f "background \"~a\" solid_color" background-color) "")
+             (if transform-rotation (format #f "transform=~a ~a" transform-rotation transform-direction) "")
+             (if (not (string=? enable "ignore")) (format #f "~a" (if enable "enable" "disable")) "")
+             (if (not (string=? power "ignore")) (format #f "power ~a" (if enable "on" "off")) "")
+             (if max-render-time (format #f "max_render_time \"~a\"" max-render-time) "")
+             (if (not (string=? adaptive-sync "ignore")) (format #f "adaptive_sync ~a" (if adaptive-sync "on" "off")) "")
+             (if render-bit-depth (format #f "render_bit_depth=\"~a\"" title) "")
+             (if (not (string=? allow-tearing "ignore")) (format #f "allow_tearing ~a" (if allow-tearing "on" "off")) "")))))
+         (command (format #f "output ~a ~a~a" output configs (if subcommands (format #f " ~a" subcommands) ""))))
     (if exec (sway-dispatch-command command)
         command)))
 

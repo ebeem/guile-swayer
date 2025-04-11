@@ -313,3 +313,9 @@ Layouts is a crucial feature of any tiling window manager. Sway, as a manual til
 
 Example of alternating layout currently implemented.
 [[./preview/alternating-layout.gif]]
+
+** Change Logs
+
+V0.4.2
+- swayipc: improved the ~sway-output~ function to accept output properties as parameters rather than a string
+- general: fixed issue #8, general doesn't accept numeric values for keybindings

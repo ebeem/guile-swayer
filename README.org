@@ -60,7 +60,7 @@ You can retrieve information about =Sway=, such as list of available =workspaces
         (focused-workspace-name (sway-get-workspaces)))
 #+end_src
 
-Note: To send commands to Sway, you must connect to the Sway sockets. Without connecting to the socket your commands won't be sent to Sway. use the function =(sway-connect-socktes!)= immediately after the imports in your =init.scm= to ensure that the rest of the expressions can successfully send commands to Sway.
+Note: To send commands to Sway, you must connect to the Sway sockets. Without connecting to the socket your commands won't be sent to Sway. use the function =(sway-connect-sockets!)= immediately after the imports in your =init.scm= to ensure that the rest of the expressions can successfully send commands to Sway.
 
 #+begin_src scheme
   ;; connect to sway sockets
